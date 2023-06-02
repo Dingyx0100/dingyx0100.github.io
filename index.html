@@ -11,12 +11,10 @@
 body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 .filterDiv {
   float: left;
-  background-color: #2196F3;
-  color: #ffffff;
-  width: 100px;
-  line-height: 100px;
-  text-align: center;
-  margin: 2px;
+  background-color: #ffffff;
+  color: #000000;
+  width: 33.33%;
+  line-height: 120%;
   display: none;
 }
 
@@ -33,7 +31,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 .btn {
   border: none;
   outline: none;
-  padding: 10px 16px;
+  padding: 8px 16px;
   background-color: #ffffff;
   cursor: pointer;
 }
@@ -88,9 +86,9 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
     <h1><b>My Project</b></h1>
     <div class="w3-section w3-bottombar w3-padding-16">
       <span class="w3-margin-right">Filter:</span> 
-      <button class="btn active">ALL</button>
-      <button class="w3-button w3-white"><i class="fa fa-book w3-margin-right"></i>Research</button>
-      <button class="w3-button w3-white w3-hide-small"><i class="fa fa-group w3-margin-right"></i>Coursework</button>
+      <button class="btn active" onclick="filterSelection('all')">ALL</button>
+      <button class="btn"><i class="fa fa-book w3-margin-right"></i>Research</button>
+      <button class="btn"><i class="fa fa-group w3-margin-right"></i>Coursework</button>
       <button class="w3-button w3-white w3-hide-small"><i class="fa fa-smile-o w3-margin-right"></i>For fun</button>
     </div>
     </div>
@@ -98,7 +96,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   
   <!-- First Photo Grid-->
   <div class="w3-row-padding">
-    <div class="w3-third w3-container w3-margin-bottom">
+    <div class="filterDiv Coursework">
       <img src="/proj_img/Depression.jpg" alt="Norway" style="width:100%" class="w3-hover-opacity">
       <div class="w3-container w3-white">
         <p><b>Depression Detection based on Audio and Text Data</b></p>
@@ -309,6 +307,49 @@ function w3_open() {
 function w3_close() {
     document.getElementById("mySidebar").style.display = "none";
     document.getElementById("myOverlay").style.display = "none";
+}
+
+filterSelection("all")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("filterDiv");
+  if (c == "all") c = "";
+  for (i = 0; i < x.length; i++) {
+    w3RemoveClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+  }
+}
+
+function w3AddClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {element.className += " " + arr2[i];}
+  }
+}
+
+function w3RemoveClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);     
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+// Add active class to the current button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function(){
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
 }
 </script>
 
