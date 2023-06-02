@@ -9,7 +9,45 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
+.filterDiv {
+  float: left;
+  background-color: #2196F3;
+  color: #ffffff;
+  width: 100px;
+  line-height: 100px;
+  text-align: center;
+  margin: 2px;
+  display: none;
+}
+
+.show {
+  display: block;
+}
+
+.container {
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+/* Style the buttons */
+.btn {
+  border: none;
+  outline: none;
+  padding: 12px 16px;
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #ddd;
+}
+
+.btn.active {
+  background-color: #666;
+  color: white;
+}
 </style>
+
 </head>
 <body class="w3-light-grey w3-content" style="max-width:1600px">
 
@@ -50,7 +88,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
     <h1><b>My Project</b></h1>
     <div class="w3-section w3-bottombar w3-padding-16">
       <span class="w3-margin-right">Filter:</span> 
-      <button class="w3-button w3-black">ALL</button>
+      <button class="btn active">ALL</button>
       <button class="w3-button w3-white"><i class="fa fa-book w3-margin-right"></i>Research</button>
       <button class="w3-button w3-white w3-hide-small"><i class="fa fa-group w3-margin-right"></i>Coursework</button>
       <button class="w3-button w3-white w3-hide-small"><i class="fa fa-smile-o w3-margin-right"></i>For fun</button>
