@@ -16,7 +16,6 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   width: 33.33%;
   line-height: 150%;
   display: none;
-  margin: 0.6% 10px;
 }
 
 .show {
@@ -26,8 +25,13 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 .container {
   margin-top: 20px;
   overflow: hidden;
+  display: table;
 }
 
+.container > .filterDiv {
+  padding: 8px;
+}
+  
 /* Style the buttons */
 .btn {
   border: none;
@@ -96,7 +100,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   </header>
   
   <!-- Container-->
-  <div class="w3-row-padding">
+  <div class="container">
     <div class="filterDiv Coursework">
       <img src="/proj_img/Depression.jpg" alt="Depression" style="width:100%" class="w3-hover-opacity">
       <div class="w3-container w3-white">
