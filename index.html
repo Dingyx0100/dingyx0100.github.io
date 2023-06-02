@@ -22,15 +22,18 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   display: block;
 }
 
-.container {
+.container,
+.container > .filterDiv {
+  padding: 8px;
+}
+
+.container:after {
   margin-top: 20px;
   overflow: hidden;
   display: table;
 }
 
-.container > .filterDiv {
-  padding: 8px;
-}
+
   
 /* Style the buttons */
 .btn {
