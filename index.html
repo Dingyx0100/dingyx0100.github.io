@@ -9,17 +9,13 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
 body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
-.filterDiv {
-  float: left;
-  background-color: #ffffff;
-  color: #000000;
-  width: 33.33%;
-  line-height: 150%;
-  display: none;
+
+* {
+  box-sizing: border-box;
 }
 
-.show {
-  display: block;
+.container {
+  margin: 10px 4px;
 }
 
 .container,
@@ -27,14 +23,67 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   padding: 8px;
 }
 
-.container:after {
-  margin-top: 20px;
-  overflow: hidden;
-  display: table;
+.filterDiv {
+  float: left;
+  width: 33.33%;
+  display: none;
+  line-height: 150%;
 }
 
+.container:after {
+  content: "";
+  display: grid;
+  clear: both;
+}
 
-  
+p.c {
+  height: 100px;
+  display:-webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:6;
+}
+
+div.c {
+  background-color: white;
+  padding: 0px 20px;
+  height: 225px;
+  display:-webkit-box;
+  overflow-y: scroll;
+  text-overflow: clip;
+  -webkit-box-orient:vertical;
+}
+
+div.c::-webkit-scrollbar{
+  width: 10px;
+  background-color: #fff;
+}
+
+div.c:hover ::-webkit-scrollbar-track-piece {
+  /*鼠标移动上去再显示滚动条*/
+  background-color: #fff;
+  /* 滚动条的背景颜色 */
+  border-radius: 6px;
+  /* 滚动条的圆角宽度 */
+}
+
+div.c:hover::-webkit-scrollbar-thumb:hover {
+  background-color: #D3D3D3;
+}
+
+div.c:hover::-webkit-scrollbar-thumb:vertical {
+  background-color: #D3D3D3;
+  border-radius: 6px;
+  outline: 2px solid #fff;
+  outline-offset: -2px;
+  border: 2px solid #fff;
+}
+
+.show {
+  display: block;
+}
+
 /* Style the buttons */
 .btn {
   border: none;
@@ -49,7 +98,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 }
 
 .btn.active {
-  background-color: #666;
+  background-color: #000000;
   color: white;
 }
 </style>
@@ -91,112 +140,58 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
     <a href="#"><img src="/img/photographer-rec.jpg" style="width:65px;" class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity"></a>
     <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open()"><i class="fa fa-bars"></i></span>
     <div class="w3-container">
-    <h1><b>My Project</b></h1>
-    <div class="w3-section w3-bottombar w3-padding-16">
-      <span class="w3-margin-right">Filter:</span> 
-      <button class="btn active" onclick="filterSelection('all')">ALL</button>
-      <button class="btn"><i class="fa fa-book w3-margin-right"></i>Research</button>
-      <button class="btn"><i class="fa fa-group w3-margin-right"></i>Coursework</button>
-      <button class="btn"><i class="fa fa-smile-o w3-margin-right"></i>For fun</button>
-    </div>
+      <h1><b>My Project</b></h1>
+      <div class="w3-section w3-bottombar w3-padding-16" id="myBtnContainer">
+        <span class="w3-margin-right">Filter:</span>
+        <button class="btn active" onclick="filterSelection('all')">ALL</button>
+        <button class="btn" onclick="filterSelection('Research')"><i class="fa fa-book w3-margin-right"></i>Research</button>
+        <button class="btn" onclick="filterSelection('Coursework')"><i class="fa fa-group w3-margin-right"></i>Coursework</button>
+        <button class="btn" onclick="filterSelection('Forfun')"><i class="fa fa-smile-o w3-margin-right"></i>For fun</button>
+      </div>
     </div>
   </header>
   
   <!-- Container-->
-<!--   <div class="container">
+  <div class="container">
     <div class="filterDiv Coursework">
       <img src="/proj_img/Depression.jpg" alt="Depression" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
+      <div class="c"><!-- w3-container w3-white-->
         <p><b>Depression Detection based on Audio and Text Data</b></p>
-        <p>A coursework on Audio and text based Depression Classification using fused model (LSTM+GRU). The experiment also explored on how data enlarging and resampling affect the result.</p>
+        <p>This project is a coursework on Audio and text based Depression Classification using fused model (LSTM+GRU). The experiment also explored on how data enlarging and resampling affect the result.</p>
       </div>
     </div>
     <div class="filterDiv Research">
       <img src="/proj_img/RoadSafety.png" alt="RoadSafety" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
+      <div class="c">
         <p><b>Video based Speed Measurement</b></p>
         <p>The project focused on vehicle speed estimation based on videos and was therefore built based on object recognition and tracking algorithm. A calibration method is also implemented here to fix the tortion of distance caused by Perspective. Detailed code will be released with paper later.</p>
       </div>
     </div>
     <div class="filterDiv Research">
       <img src="/proj_img/OCR.jpg" alt="OCR detection" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
+      <div class="c">
         <p><b>OCR Detection Paper Review</b></p>
-        <p>OCR is becoming more and more frequently used in our daily lives and is also developing rapidly in recent years. Click in and see a review on recent papers.</p>
+        <p>OCR is a nice tool, used frequently in area. It is also developing rapidly in recent years with the development of nature language processing.</p>
+      </div>
+    </div>
+
+    <div class="filterDiv Research">
+      <img src="/proj_img/Covid19.jpg" alt="Epidemic" style="width:100%" class="w3-hover-opacity">
+      <div class="c">
+        <p><a href="https://github.com/Dingyx0100/EpidemicSimulation"><b>Analysis of Vaccination on Markovian Random Walk Model of epidemic proliferation</b></a></p>
+        <p>The project simulated the spread of the epidemic under SIR model by using Markovian random walk and the paper then discussed the impact of epidemic prevention policies and vaccines on the spread of the epidemic.</p>
       </div>
     </div>
     <div class="filterDiv Coursework">
       <img src="/proj_img/SafeLogistics.png" alt="SafeLogistics" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
+      <div class="c">
         <p><a href="https://github.com/ShupeiLi/database-project"><b>Safe Logistics: Django based web database inquiry system</b></a></p>
-        <p>Group project that focus on practicing our skills on SQL and Django. The project aims to provide information for sellers, buyers and logistics companies. And it also provides info on domestic pandemic (covid-19) situation so that buyers can be notified on potential epidemic risk.</p>
-      </div>
-    </div>
-    <div class="filterDiv Research">
-      <img src="/proj_img/Covid19.jpg" alt="Epidemic" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
-        <p><a href="https://github.com/Dingyx0100/EpidemicSimulation"><b>Analysis of Vaccination on Markovian Random Walk Model of epidemic proliferation</b></a></p>
-        <p>The project simulated the spread of the epidemic under SIR model by using Markovian random walk and the paper then discussed the impact of epidemic prevention policies and vaccines on the spread of the epidemic.</p>
+        <p>The project was built based on Python and Django and aimed to provide information for sellers, buyers and logistics companies. And it also provides info on domestic pandemic (covid-19) situation so that buyers can be notified on potential epidemic risk.</p>
       </div>
     </div>
     <div class="filterDiv Forfun">
       <img src="/proj_img/Yijing.jpg" alt="Cyber Divination" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
-        <p><b>Cyber Divination</b></p>
-        <p>Yijing is a Chinese ancient classic masterpiece that expounds the changes of the earth. Only one of the three parts of it exists now and it explains the connections between human and the nature. It has also been used for divination...</p>
-      </div>
-    </div>
-  </div> -->
-  
-  <!-- First Photo Grid-->
-  <div class="w3-row-padding">
-    <div class="w3-third w3-container w3-margin-bottom">
-      <img src="/proj_img/Depression.jpg" alt="Norway" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
-        <p><b>Depression Detection based on Audio and Text Data</b></p>
-        <p>A coursework on Audio and text based Depression Classification using fused model (LSTM+GRU). The experiment also explored on how data enlarging and resampling affect the result.</p>
-      </div>
-    </div>
-    <!-- filterDiv Research -->
-    <div class="w3-third w3-container w3-margin-bottom">
-      <img src="/proj_img/RoadSafety.png" alt="Norway" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
-        <p><b>Video based Speed Measurement</b></p>
-        <p>The project focused on vehicle speed estimation based on videos and was therefore built based on object recognition and tracking algorithm. A calibration method is also implemented here to fix the tortion of distance caused by Perspective. Detailed code will be released with paper later.</p>
-      </div>
-    </div>
-    <!-- filterDiv Research -->
-    <div class="w3-third w3-container">
-      <img src="/proj_img/OCR.jpg" alt="Norway" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
-        <p><b>OCR Detection Paper Review</b></p>
-        <p>OCR is becoming more and more frequently used in our daily lives and is also developing rapidly in recent years. Click in and see a review on recent papers.</p>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Second Photo Grid-->
-  <div class="w3-row-padding">
-    <!-- filterDiv Coursework -->
-    <div class="w3-third w3-container w3-margin-bottom">
-      <img src="/proj_img/SafeLogistics.png" alt="SafeLogistics" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
-        <p><a href="https://github.com/ShupeiLi/database-project"><b>Safe Logistics: Django based web database inquiry system</b></a></p>
-        <p>Group project that focus on practicing our skills on SQL and Django. The project aims to provide information for sellers, buyers and logistics companies. And it also provides info on domestic pandemic (covid-19) situation so that buyers can be notified on potential epidemic risk.</p>
-      </div>
-    </div>
-    <!-- filterDiv Research -->
-    <div class="w3-third w3-container w3-margin-bottom">
-      <img src="/proj_img/Covid19.jpg" alt="Epidemic" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
-        <p><a href="https://github.com/Dingyx0100/EpidemicSimulation"><b>Analysis of Vaccination on Markovian Random Walk Model of epidemic proliferation</b></a></p>
-        <p>The project simulated the spread of the epidemic under SIR model by using Markovian random walk and the paper then discussed the impact of epidemic prevention policies and vaccines on the spread of the epidemic.</p>
-      </div>
-    </div>
-    <!-- filterDiv Forfun -->
-    <div class="w3-third w3-container">
-      <img src="/proj_img/Yijing.jpg" alt="Cyber Divination" style="width:100%" class="w3-hover-opacity">
-      <div class="w3-container w3-white">
+      <div class="c">
         <p><b>Cyber Divination</b></p>
         <p>Yijing is a Chinese ancient classic masterpiece that expounds the changes of the earth. Only one of the three parts of it exists now and it explains the connections between human and the nature. It has also been used for divination...</p>
       </div>
@@ -229,10 +224,16 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   <div class="w3-container w3-padding-large" style="margin-bottom:32px">
     <h4><b>About Me</b></h4>
     <p>
-      Hi, thanks for dropping by my homepage. I'm Yuxin Ding. I am currently achieving a master's degree in Johns Hopkins University, AMS department. 
+      Hi, thanks for dropping by my homepage. I'm Yuxin Ding. I am currently working as a Data Scientist in Carina AI. 
+      I finished my master's program in Dec, 2024 in Johns Hopkins University, AMS department. 
       I did my undergrad in Fudan University and I majored in Statistics back then. My research and programs mainly fall in the application area, 
       and I am personally interested in Computer Vision and Optimization related topics. Please see above for my previous projects. Below is a brief 
       list of my skill sets. And a resume is also attached below if you are interested.
+    </p>
+    <p>
+      <a href="https://docs.google.com/document/d/1FWaz82YFv0L-zRJHSdqGnONeis9MAkQ4/edit?usp=drive_link"><button class="w3-button w3-dark-grey w3-padding-large w3-margin-top w3-margin-bottom">
+        <i class="fa fa-download w3-margin-right"></i>See resume here
+      </button></a>
     </p>
     <hr>
     
@@ -268,12 +269,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
     <div class="w3-grey">
       <div class="w3-container w3-dark-grey w3-padding w3-center" style="width:30%">30%</div>
     </div>
-    <p>
-      <a href="https://docs.google.com/document/d/1FWaz82YFv0L-zRJHSdqGnONeis9MAkQ4/edit?usp=drive_link"><button class="w3-button w3-dark-grey w3-padding-large w3-margin-top w3-margin-bottom">
-        <i class="fa fa-download w3-margin-right"></i>See resume here
-      </button></a>
-    </p>
-    <hr>
+  <hr>
   </div>
   
   <div class="w3-container w3-padding-large" style="margin-bottom:32px">
@@ -307,12 +303,12 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
       </div>
       <div class="w3-third w3-dark-grey">
         <p><i class="fa fa-phone w3-xxlarge w3-text-light-grey"></i></p>
-        <p>512312311</p>
+        <p>(443)799-7315</p>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- Footer
   <footer class="w3-container w3-padding-32 w3-dark-grey">
   <div class="w3-row-padding">
     <div class="w3-third">
@@ -349,7 +345,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
     </div>
 
   </div>
-  </footer>
+  </footer> -->
   <!--   <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a> -->
   <div class="w3-black w3-center w3-padding-24">---The End---</div>
 
