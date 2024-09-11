@@ -36,23 +36,36 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   clear: both;
 }
 
-p.c {
-  height: 100px;
-  display:-webkit-box;
+.openBtn {
+  margin:0.5px 0;
+  text-decoration: none;
+  color:darkblue;
+}
+
+.openBtn:hover {
+  text-decoration: underline;
+}
+
+.caption {
   overflow: hidden;
   text-overflow: ellipsis;
-  -webkit-box-orient:vertical;
-  -webkit-line-clamp:6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 div.c {
   background-color: white;
   padding: 0px 20px;
-  height: 225px;
+  height: 215px;
   display:-webkit-box;
   overflow-y: scroll;
   text-overflow: clip;
   -webkit-box-orient:vertical;
+}
+
+div.c > p{
+  padding: 1px, 0;
 }
 
 div.c::-webkit-scrollbar{
@@ -126,6 +139,7 @@ div.c:hover::-webkit-scrollbar-thumb:vertical {
     <a href="https://www.instagram.com/yxding_chris/"><i class="fa fa-instagram w3-hover-opacity"></i></a>
     <a href="https://github.com/Dingyx0100"><i class="fa fa-github w3-hover-opacity"></i></a>
     <a href="https://www.linkedin.com/in/yuxin-ding-6898b425a/"><i class="fa fa-linkedin w3-hover-opacity"></i></a>
+    <a href="dessertlog.html"><img src="/icon/croissant_9763439.png"></a>
   </div>
 </nav>
 
@@ -156,44 +170,79 @@ div.c:hover::-webkit-scrollbar-thumb:vertical {
     <div class="filterDiv Coursework">
       <img src="/proj_img/Depression.jpg" alt="Depression" style="width:100%" class="w3-hover-opacity">
       <div class="c"><!-- w3-container w3-white-->
-        <p><b>Depression Detection based on Audio and Text Data</b></p>
-        <p>This project is a coursework on Audio and text based Depression Classification using fused model (LSTM+GRU). The experiment also explored on how data enlarging and resampling affect the result.</p>
+        <p class="caption"><b>Depression Detection based on Audio and Text Data</b></p>
+        <p class="content">This project is a coursework on Audio and text based Depression Classification using fused model (LSTM+GRU). The experiment also explored on how data enlarging and resampling affect the result.</p>
+        <p class="openBtn" onclick="testClick(this, 0)">show details >></p>
       </div>
     </div>
     <div class="filterDiv Research">
       <img src="/proj_img/RoadSafety.png" alt="RoadSafety" style="width:100%" class="w3-hover-opacity">
       <div class="c">
-        <p><b>Video based Speed Measurement</b></p>
-        <p>The project focused on vehicle speed estimation based on videos and was therefore built based on object recognition and tracking algorithm. A calibration method is also implemented here to fix the tortion of distance caused by Perspective. Detailed code will be released with paper later.</p>
+        <p class="caption"><b>Video based Speed Measurement</b></p>
+        <p class="content">The project focused on vehicle speed estimation based on videos and was therefore built based on object recognition and tracking algorithm. A calibration method is also implemented here to fix the tortion of distance caused by Perspective. Detailed code will be released with paper later.</p>
+        <p class="openBtn" onclick="testClick(this, 1)">show details >></p>
       </div>
     </div>
     <div class="filterDiv Research">
       <img src="/proj_img/OCR.jpg" alt="OCR detection" style="width:100%" class="w3-hover-opacity">
       <div class="c">
-        <p><b>OCR Detection Paper Review</b></p>
-        <p>OCR is a nice tool, used frequently in area. It is also developing rapidly in recent years with the development of nature language processing.</p>
+        <p class="caption"><b>OCR Detection Paper Review</b></p>
+        <p class="content">OCR is a nice tool, used frequently in area. It is also developing rapidly in recent years with the development of nature language processing.</p>
+        <p class="openBtn" onclick="testClick(this, 2)">show details >></p>
       </div>
     </div>
 
     <div class="filterDiv Research">
       <img src="/proj_img/Covid19.jpg" alt="Epidemic" style="width:100%" class="w3-hover-opacity">
       <div class="c">
-        <p><a href="https://github.com/Dingyx0100/EpidemicSimulation"><b>Analysis of Vaccination on Markovian Random Walk Model of epidemic proliferation</b></a></p>
-        <p>The project simulated the spread of the epidemic under SIR model by using Markovian random walk and the paper then discussed the impact of epidemic prevention policies and vaccines on the spread of the epidemic.</p>
+        <p class="caption"><a href="https://github.com/Dingyx0100/EpidemicSimulation"><b>Analysis of Vaccination on Markovian Random Walk Model of epidemic proliferation</b></a></p>
+        <p class="content">The project simulated the spread of the epidemic under SIR model by using Markovian random walk and the paper then discussed the impact of epidemic prevention policies and vaccines on the spread of the epidemic.</p>
+        <p class="openBtn" onclick="testClick(this, 3)">show details >></p>
       </div>
     </div>
     <div class="filterDiv Coursework">
       <img src="/proj_img/SafeLogistics.png" alt="SafeLogistics" style="width:100%" class="w3-hover-opacity">
       <div class="c">
-        <p><a href="https://github.com/ShupeiLi/database-project"><b>Safe Logistics: Django based web database inquiry system</b></a></p>
-        <p>The project was built based on Python and Django and aimed to provide information for sellers, buyers and logistics companies. And it also provides info on domestic pandemic (covid-19) situation so that buyers can be notified on potential epidemic risk.</p>
+        <p class="caption"><a href="https://github.com/ShupeiLi/database-project"><b>Safe Logistics: Django based web database inquiry system</b></a></p>
+        <p class="content">The project was built based on Python and Django and aimed to provide information for sellers, buyers and logistics companies. And it also provides info on domestic pandemic (covid-19) situation so that buyers can be notified on potential epidemic risk.</p>
+        <p class="openBtn" onclick="testClick(this, 4)">show details >></p>
       </div>
     </div>
     <div class="filterDiv Forfun">
       <img src="/proj_img/Yijing.jpg" alt="Cyber Divination" style="width:100%" class="w3-hover-opacity">
       <div class="c">
-        <p><b>Cyber Divination</b></p>
-        <p>Yijing is a Chinese ancient classic masterpiece that expounds the changes of the earth. Only one of the three parts of it exists now and it explains the connections between human and the nature. It has also been used for divination...</p>
+        <p class="caption"><b>Cyber Divination</b></p>
+        <p class="content">Yijing is a Chinese ancient classic masterpiece that expounds the changes of the earth. Only one of the three parts of it exists now and it explains the connections between human and the nature. It has also been used for divination...</p>
+        <p class="openBtn" onclick="testClick(this, 5)">show details >></p>
+      </div>
+    </div>
+    <div class="filterDiv Research">
+      <img src="/proj_img/Yijing.jpg" alt="Spine Segmentation" style="width:100%" class="w3-hover-opacity">
+      <div class="c">
+        <p class="caption"><b>Automated Spine Vertebrae Segmentation</b></p>
+        <p class="content">Automated Vertebrae Segmentation provides multiple benefits including improving time efficiency, facilitating 3D modeling and supporting diagnosis (Spinal Fractures, Tumors and Metastasis, Osteoporosis, etc.). 
+          Nevertheless, training a model on the 24 vertebrae is challenging, due to inaccuracy, it is very likely disorderly labeled. Training a model on separating the spine into Cervical, Thoracic and Lumbar is much easier and more accurate on the other hand. 
+          Therefore, can we think of a method that automatically separate the vertebrae within the three parts?</p>
+        <p class="openBtn" onclick="testClick(this, 6)">show details >></p>
+      </div>
+    </div>
+    <div class="filterDiv Research">
+      <img src="/proj_img/Yijing.jpg" alt="Brain MRI" style="width:100%" class="w3-hover-opacity">
+      <div class="c">
+        <p class="caption"><b>Improve AI-based Model Robustness of Ventricle Segmentation from Multi-Contrast MRI via Active Learning</b></p>
+        <p class="content">Accurate and automatic ventricle segmentation is critical for diagnosing hydrocephalus and monitoring its progression in patients. However, during model training, we observed challenges in achieving robust performance across varying MRI 
+          contrasts and diverse patient populations. Active learning, known for its ability to minimize labeling costs and expedite model adaptation to different data populations, offers a promising solution to these issues. In the paper, we present a novel 
+          uncertainty-based metric designed to assess the informativeness of individual data samples. By integrating this metric into the active learning process, we aim to improve model robustness and generalization across multiple MRI contrasts, enabling more 
+          reliable ventricle segmentation even in complex clinical scenarios. </p>
+        <p class="openBtn" onclick="testClick(this, 7)">show details >></p>
+      </div>
+    </div>
+    <div class="filterDiv Research">
+      <img src="/proj_img/Yijing.jpg" alt="Cyber Divination" style="width:100%" class="w3-hover-opacity">
+      <div class="c">
+        <p class="caption"><b>Automatic video edition and highlighting on surgery videos</b></p>
+        <p class="content">Yijing is a Chinese ancient classic masterpiece that expounds the changes of the earth. Only one of the three parts of it exists now and it explains the connections between human and the nature. It has also been used for divination...</p>
+        <p class="openBtn" onclick="testClick(this, 8)">show details >></p>
       </div>
     </div>
   </div>
@@ -225,7 +274,7 @@ div.c:hover::-webkit-scrollbar-thumb:vertical {
     <h4><b>About Me</b></h4>
     <p>
       Hi, thanks for dropping by my homepage. I'm Yuxin Ding. I am currently working as a Data Scientist in Carina AI. 
-      I finished my master's program in Dec, 2024 in Johns Hopkins University, AMS department. 
+      I finished my master's program in Dec, 2023 and graduated from Johns Hopkins University, AMS department. 
       I did my undergrad in Fudan University and I majored in Statistics back then. My research and programs mainly fall in the application area, 
       and I am personally interested in Computer Vision and Optimization related topics. Please see above for my previous projects. Below is a brief 
       list of my skill sets. And a resume is also attached below if you are interested.
@@ -405,6 +454,28 @@ for (var i = 0; i < btns.length; i++) {
     current[0].className = current[0].className.replace(" active", "");
     this.className += " active";
   });
+}
+
+function $(clsname){
+  return document.getElementsByClassName(clsname);
+}
+// 立即执行函数，判断文本长度是否过长
+(function(){
+  for (var i = 0; i < $('content').length; i++){
+      $('content')[i].style.cssText = "padding:1px 0;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;"
+  }
+})()
+//点击事件，控制内容显示、收起
+function testClick(elmt, i){
+  let text = elmt.innerText;
+  if(text == 'show details >>'){
+      $('content')[i].style.cssText = "color:black";
+      elmt.innerHTML = '<< collapse'
+  }
+  if(text == '<< collapse'){
+      $('content')[i].style.cssText = "overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;";
+      elmt.innerHTML = 'show details >>'
+  }
 }
 </script>
 
