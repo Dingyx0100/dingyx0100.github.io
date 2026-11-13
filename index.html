@@ -8,138 +8,534 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
+/* ---------- Design tokens: change the look of the whole page here ---------- */
+:root {
+  --accent: #0284c7;
+  --accent-dark: #0369a1;
+  --accent-soft: #e0f2fe;
+  --accent-soft-hover: #bae6fd;
+  --accent-line: #7dd3fc;
+  --text: #333;
+  --muted: #666;
+  --radius: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.12);
+  --shadow-hover: 0 6px 18px rgba(0,0,0,0.15);
+}
+body { color: var(--text); }
+
 body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 
 * {
   box-sizing: border-box;
 }
 
-.container {
-  margin: 10px 4px;
-}
-
-.container,
-.container > .filterDiv {
-  padding: 8px;
-}
-
-.filterDiv {
-  float: left;
-  width: 33.33%;
-  display: none;
-  line-height: 150%;
-}
-
-.container:after {
-  content: "";
+/* ---------- Project grid ---------- */
+.project-grid {
   display: grid;
-  clear: both;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 20px;
+  padding: 4px 16px 24px;
 }
 
-.openBtn {
-  margin:0.5px 0;
-  text-decoration: none;
-  color:darkblue;
-}
-
-.openBtn:hover {
-  text-decoration: underline;
-}
-
-.caption {
+.card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: var(--radius);
   overflow: hidden;
-  text-overflow: ellipsis;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.card:hover, .card:focus-visible {
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+  outline: none;
+}
+.card[hidden] { display: none; }
+
+/* every thumbnail is cropped to the same shape, so rows always line up */
+.card-img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  display: block;
+  background: #e8e8e8;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 14px 18px 16px;
+}
+
+.clamp {
+  overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
 
-div.c {
-  background-color: white;
-  padding: 0px 20px;
-  height: 215px;
-  display:-webkit-box;
-  overflow-y: scroll;
-  text-overflow: clip;
-  -webkit-box-orient:vertical;
+.card-title {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.35;
+  -webkit-line-clamp: 2;
+  min-height: 2.7em;   /* reserve 2 lines even for short titles */
 }
 
-div.c > p{
-  padding: 1px, 0;
+.card-desc {
+  margin: 0 0 14px;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-line-clamp: 3;
 }
 
-div.c::-webkit-scrollbar{
-  width: 10px;
-  background-color: #fff;
+/* pinned to the bottom of every card */
+.card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 13px;
 }
 
-div.c:hover ::-webkit-scrollbar-track-piece {
-  /*鼠标移动上去再显示滚动条*/
-  background-color: #fff;
-  /* 滚动条的背景颜色 */
-  border-radius: 6px;
-  /* 滚动条的圆角宽度 */
+.badge {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-size: 12px;
 }
 
-div.c:hover::-webkit-scrollbar-thumb:hover {
-  background-color: #D3D3D3;
+.card-link {
+  margin-left: auto;
+  color: #333;
+  text-decoration: none;
 }
+.card-link:hover { text-decoration: underline; }
 
-div.c:hover::-webkit-scrollbar-thumb:vertical {
-  background-color: #D3D3D3;
-  border-radius: 6px;
-  outline: 2px solid #fff;
-  outline-offset: -2px;
-  border: 2px solid #fff;
-}
-
-.show {
-  display: block;
-}
-
-/* Style the buttons */
-.btn {
+/* ---------- Project details modal ---------- */
+.project-modal {
+  width: min(760px, calc(100vw - 32px));
+  max-height: calc(100vh - 48px);
+  padding: 0;
   border: none;
-  outline: none;
-  padding: 8px 16px;
-  background-color: #ffffff;
+  border-radius: var(--radius);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+.project-modal::backdrop { background: rgba(0,0,0,0.55); }
+/* show the whole image (screenshots must not be cropped), letterboxed on dark */
+.project-modal img {
+  width: 100%;
+  max-height: 65vh;
+  object-fit: contain;
+  display: block;
+  background: #111;
+}
+.modal-credit {
+  margin-top: 16px;
+  color: #777;
+  font-size: 12px;
+}
+.modal-body { padding: 20px 28px 28px; line-height: 1.6; }
+.modal-body h3 { margin-top: 0; }
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 18px;
   cursor: pointer;
 }
-
-.btn:hover {
-  background-color: #ddd;
+.tag {
+  display: inline-block;
+  margin: 0 6px 6px 0;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #f1f1f1;
+  font-size: 13px;
 }
 
-.btn.active {
-  background-color: #000000;
-  color: white;
+/* filter buttons: same pill shape as the intro buttons, accent color when active */
+.filter-bar { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn {
+  padding: 6px 16px;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  background: #fff;
+  color: #333;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
 }
+.btn .fa { color: var(--accent); }
+.btn:hover { background: #f1f1f1; border-color: #999; }
+.btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.active .fa { color: #fff; }
+
+/* ---------- About / experience / skills ---------- */
+.section { padding: 8px 16px 24px; }
+.section-title { margin: 8px 0 16px; font-weight: bold; }
+.section-hint { margin: -6px 0 14px; color: #666; font-size: 14px; }
+
+.intro-card, .tl-item, .skill-group, .skill-tools {
+  background: #fff;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.intro-card { overflow: hidden; }
+.intro-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 28px;
+  padding: 28px;
+}
+.intro-photo {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--accent-soft);
+  flex-shrink: 0;
+}
+.intro-text { flex: 1; min-width: 260px; line-height: 1.6; }
+.intro-name { margin: 0; font-size: 28px; font-weight: bold; }
+.intro-role { margin: 2px 0 10px; color: var(--accent); font-weight: 600; letter-spacing: 0.3px; }
+.intro-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border: 1px solid #ccc;
+  border-radius: 999px;
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s;
+}
+.pill:hover { background: #f1f1f1; border-color: #999; }
+.pill.primary { background: #222; border-color: #222; color: #fff; }
+.pill.primary:hover { background: var(--accent); border-color: var(--accent); }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+.stat { padding: 18px 12px; text-align: center; border-right: 1px solid #eee; }
+.stat:last-child { border-right: none; }
+.stat-num { font-size: 26px; font-weight: bold; color: var(--accent-dark); white-space: nowrap; }
+.stat-label { margin-top: 2px; color: #666; font-size: 13px; line-height: 1.4; }
+@media (max-width: 720px) {
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .stat:nth-child(2) { border-right: none; }
+  .stat:nth-child(-n+2) { border-bottom: 1px solid #eee; }
+  .intro-top { justify-content: center; text-align: center; }
+  .intro-actions { justify-content: center; }
+}
+
+/* timeline: an accent-colored line with one dot per entry; entries are <details> so they expand natively */
+.timeline { position: relative; padding-left: 30px; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 10px;
+  bottom: 10px;
+  width: 2px;
+  background: var(--accent-line);
+}
+.tl-item { position: relative; margin-bottom: 14px; }
+.tl-item::before {
+  content: "";
+  position: absolute;
+  left: -27px;
+  top: 20px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--accent);
+}
+.tl-item[open]::before { background: var(--accent); }
+.tl-item summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 12px;
+  padding: 14px 18px;
+  cursor: pointer;
+  list-style: none;
+}
+.tl-item summary::-webkit-details-marker { display: none; }
+.tl-item summary::after {
+  content: "\f107";              /* font-awesome chevron */
+  font-family: FontAwesome;
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  align-self: center;
+  color: #999;
+  transition: transform 0.2s;
+}
+.tl-item.no-body summary { cursor: default; }
+.tl-item.no-body summary::after { content: none; }
+.tl-item[open] summary::after { transform: rotate(180deg); }
+.tl-when { grid-column: 1; color: var(--accent); font-size: 13px; font-weight: 600; }
+.tl-title { grid-column: 1; font-weight: bold; font-size: 16px; }
+.tl-org { grid-column: 1; color: #666; font-size: 14px; }
+.tl-body { margin: 0; padding: 0 18px 16px 36px; line-height: 1.6; font-size: 14px; color: #333; }
+.tl-body li { margin-bottom: 4px; }
+
+/* skills */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);   /* 2 x 2 */
+  gap: 16px;
+}
+@media (max-width: 900px) { .skills-grid { grid-template-columns: 1fr; } }
+.skill-group { padding: 18px 20px 12px; }
+.skill-group h3 { margin: 0 0 12px; font-size: 15px; font-weight: bold; }
+.skill-group h3 .fa { width: 20px; color: var(--accent); }
+.skill-tools { margin-top: 16px; padding: 14px 20px 6px; }
+.skill-tools b { margin-right: 10px; font-size: 14px; }
+.chip {
+  position: relative;
+  display: inline-block;
+  margin: 0 6px 8px 0;
+  padding: 4px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: #f1f1f1;
+  color: #333;
+  font: inherit;
+  font-size: 13px;
+}
+.chip.linked {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent-dark);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.chip.linked:hover { background: var(--accent-soft-hover); }
+.chip.linked.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip.demo { margin: 0 2px 0 0; padding: 1px 8px; cursor: default; }
+/* tooltip listing the projects that use a skill */
+.chip[data-tip]:hover::after, .chip[data-tip]:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* spotlight on the project grid when a skill is clicked */
+.skill-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 16px 12px;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+.skill-banner[hidden] { display: none; }
+.skill-banner button {
+  margin-left: auto;
+  border: none;
+  background: none;
+  color: var(--accent-dark);
+  cursor: pointer;
+  font: inherit;
+}
+.skill-banner button:hover { text-decoration: underline; }
+.project-grid.spotlight .card:not(.match) { opacity: 0.35; filter: grayscale(0.7); }
+.project-grid.spotlight .card.match { box-shadow: 0 0 0 3px var(--accent), var(--shadow-hover); }
+
+/* contact */
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.contact-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 22px 16px;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow);
+  color: #333;
+  text-align: center;
+  text-decoration: none;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+a.contact-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.contact-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 22px;
+}
+.contact-label { color: var(--accent); font-size: 13px; font-weight: 600; }
+.contact-value { font-size: 15px; overflow-wrap: anywhere; }
+/* AWS badge: a small badge in the stat; clicking it flies a big copy to the middle of the screen */
+.badge-mini { display: none; width: 30px; height: 30px; object-fit: contain; vertical-align: -6px; transition: transform 0.2s; }
+.stat-badge.ready .badge-mini { display: inline-block; }
+.stat-badge.ready #badgeIcon { display: none; }
+.stat-badge.ready { cursor: pointer; }
+.stat-badge.ready:hover .badge-mini { transform: rotate(-12deg) scale(1.15); }
+.badge-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0,0,0,0.45);
+  opacity: 0;
+  transition: opacity 0.5s;
+  cursor: pointer;
+}
+.badge-backdrop.show { opacity: 1; }
+.badge-verify {
+  position: absolute;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--accent-dark);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: var(--shadow-hover);
+  opacity: 0;
+  transform: translate(-50%, 8px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+/* fade in once the badge has finished spinning out */
+.badge-backdrop.show .badge-verify { opacity: 1; transform: translate(-50%, 0); transition-delay: 0.75s; }
+.badge-verify:hover { background: var(--accent-soft); }
+.badge-fly {
+  position: fixed;
+  z-index: 21;
+  object-fit: contain;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 30px rgba(0,0,0,0.35));
+}
+.contact-hint { margin-top: 4px; color: var(--muted); font-size: 12px; }
+.site-footer {
+  margin-top: 16px;
+  padding: 20px 16px 28px;
+  border-top: 1px solid #ddd;
+  color: #888;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* ---------- Sidebar ---------- */
+.side { border-right: 1px solid #e5e5e5; }
+.side-head { padding: 8px 24px 20px; }
+.side-close { float: right; color: #888; font-size: 28px; text-decoration: none; }
+.side-photo {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent-soft);
+}
+.side-name { margin-top: 12px; font-size: 20px; font-weight: bold; }
+.side-role { color: var(--accent); font-size: 13px; font-weight: 600; }
+.side-nav { padding: 8px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; }
+.side-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  border-left: 3px solid transparent;
+  color: #555;
+  font-size: 14px;
+  letter-spacing: 0.6px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.side-link .fa { width: 16px; text-align: center; }
+.side-link:hover { background: #f6f6f6; }
+.side-link.active { border-left-color: var(--accent); background: var(--accent-soft); color: var(--accent-dark); }
+.side-social { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px 24px; }
+.side-social a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f1f1;
+  color: #555;
+  font-size: 16px;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.side-social a:hover { background: var(--accent-soft); color: var(--accent); }
+.side-social img { width: 18px; }
+.mobile-avatar { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; margin: 12px 16px; }
 </style>
+<script src="./projects.js"></script>
 
 </head>
 <body class="w3-light-grey w3-content" style="max-width:1600px">
 
 <!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
-  <div class="w3-container">
-    <a href="#" onclick="w3_close()" class="w3-hide-large w3-right w3-jumbo w3-padding w3-hover-grey" title="close menu">
-      <i class="fa fa-remove"></i>
-    </a>
-    <img src="./img/photographer-rec.jpg" style="width:45%;" class="w3-round"><br><br>
-    <h4><b>PORTFOLIO</b></h4>
-    <p>Hi, I'm Yuxin Ding.</p>
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left side" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="side-head">
+    <a href="#" onclick="w3_close()" class="side-close w3-hide-large" title="close menu"><i class="fa fa-remove"></i></a>
+    <img class="side-photo" src="./img/profile.jpg" alt="Yuxin Ding">
+    <div class="side-name">Yuxin Ding</div>
+    <div class="side-role">Machine Learning Engineer</div>
   </div>
-  <div class="w3-bar-block">
-    <a href="#Project" onclick="w3_close()" class="w3-bar-item w3-button w3-padding w3-text-teal"><i class="fa fa-th-large fa-fw w3-margin-right"></i>PROJECT</a> 
-    <a href="#about" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw w3-margin-right"></i>ABOUT ME</a>
-    <a href="#contact" onclick="w3_close()" class="w3-bar-item w3-button w3-padding"><i class="fa fa-envelope fa-fw w3-margin-right"></i>CONTACT</a>
+  <div class="side-nav" id="sideNav">
+    <a href="#Project" onclick="w3_close()" class="side-link active"><i class="fa fa-th-large"></i>PROJECTS</a>
+    <a href="#about" onclick="w3_close()" class="side-link"><i class="fa fa-user"></i>ABOUT ME</a>
+    <a href="#experience" onclick="w3_close()" class="side-link"><i class="fa fa-briefcase"></i>EXPERIENCE</a>
+    <a href="#skills" onclick="w3_close()" class="side-link"><i class="fa fa-wrench"></i>SKILLS</a>
+    <a href="#contact" onclick="w3_close()" class="side-link"><i class="fa fa-envelope"></i>CONTACT</a>
   </div>
-  <div class="w3-panel w3-large">
-    <a href="https://www.facebook.com/profile.php?id=100085318224279&sk=about_work_and_education"><i class="fa fa-facebook-official w3-hover-opacity"></i></a>
-    <a href="https://www.instagram.com/yxding_chris/"><i class="fa fa-instagram w3-hover-opacity"></i></a>
-    <a href="https://github.com/Dingyx0100"><i class="fa fa-github w3-hover-opacity"></i></a>
-    <a href="https://www.linkedin.com/in/yuxin-ding-6898b425a/"><i class="fa fa-linkedin w3-hover-opacity"></i></a>
-    <a href="dessertlog.html"><img src="/icon/croissant_9763439.png" style="width:20px"></a>
+  <div class="side-social">
+    <a href="https://github.com/Dingyx0100" target="_blank" rel="noopener" title="GitHub"><i class="fa fa-github"></i></a>
+    <a href="https://www.linkedin.com/in/yuxin-ding-6898b425a/" target="_blank" rel="noopener" title="LinkedIn"><i class="fa fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/yxding_chris/" target="_blank" rel="noopener" title="Instagram"><i class="fa fa-instagram"></i></a>
+    <a href="https://www.facebook.com/profile.php?id=100085318224279&amp;sk=about_work_and_education" target="_blank" rel="noopener" title="Facebook"><i class="fa fa-facebook"></i></a>
+    <a href="https://dingyx0100.github.io/DessertBlogPage/" target="_blank" rel="noopener" title="Dessert blog"><img src="./icon/croissant_9763439.png" alt="Dessert blog"></a>
   </div>
 </nav>
 
@@ -151,252 +547,220 @@ div.c:hover::-webkit-scrollbar-thumb:vertical {
 
   <!-- Header -->
   <header id="Project">
-    <a href="#"><img src="/img/photographer-rec.jpg" style="width:65px;" class="w3-circle w3-right w3-margin w3-hide-large w3-hover-opacity"></a>
+    <a href="#"><img src="./img/profile.jpg" alt="Yuxin Ding" class="mobile-avatar w3-right w3-hide-large"></a>
     <span class="w3-button w3-hide-large w3-xxlarge w3-hover-text-grey" onclick="w3_open()"><i class="fa fa-bars"></i></span>
-    <div class="w3-container">
-      <h1><b>My Project</b></h1>
-      <div class="w3-section w3-bottombar w3-padding-16" id="myBtnContainer">
-        <span class="w3-margin-right">Filter:</span>
-        <button class="btn active" onclick="filterSelection('all')">ALL</button>
-        <button class="btn" onclick="filterSelection('Research')"><i class="fa fa-book w3-margin-right"></i>Research</button>
-        <button class="btn" onclick="filterSelection('Coursework')"><i class="fa fa-group w3-margin-right"></i>Coursework</button>
-        <button class="btn" onclick="filterSelection('Forfun')"><i class="fa fa-smile-o w3-margin-right"></i>For fun</button>
+    <div class="section project-head">
+      <h2 class="section-title">Projects</h2>
+      <div class="filter-bar" id="myBtnContainer">
+        <button class="btn active" data-filter="all">All</button>
+        <button class="btn" data-filter="Research"><i class="fa fa-book"></i> Research</button>
+        <button class="btn" data-filter="Personal"><i class="fa fa-code"></i> Personal</button>
+        <button class="btn" data-filter="Coursework"><i class="fa fa-group"></i> Coursework</button>
       </div>
     </div>
   </header>
   
-  <!-- Container-->
-  <div class="container">
-    <div class="filterDiv Coursework">
-      <img src="/proj_img/Depression.jpg" alt="Depression" style="width:100%" class="w3-hover-opacity">
-      <div class="c"><!-- w3-container w3-white-->
-        <p class="caption"><b>Depression Detection based on Audio and Text Data</b></p>
-        <p class="content">This project is a coursework on Audio and text based Depression Classification using fused model (LSTM+GRU). The experiment also explored on how data enlarging and resampling affect the result.</p>
-        <p class="openBtn" onclick="testClick(this, 0)">show details >></p>
-      </div>
-    </div>
-    <div class="filterDiv Research">
-      <img src="/proj_img/RoadSafety.png" alt="RoadSafety" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><b>Video based Speed Measurement</b></p>
-        <p class="content">The project focused on vehicle speed estimation based on videos and was therefore built based on object recognition and tracking algorithm. A calibration method is also implemented here to fix the tortion of distance caused by Perspective. Detailed code will be released with paper later.</p>
-        <p class="openBtn" onclick="testClick(this, 1)">show details >></p>
-      </div>
-    </div>
-    <div class="filterDiv Research">
-      <img src="/proj_img/OCR.jpg" alt="OCR detection" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><b>OCR Detection Paper Review</b></p>
-        <p class="content">OCR is a nice tool, used frequently in area. It is also developing rapidly in recent years with the development of nature language processing.</p>
-        <p class="openBtn" onclick="testClick(this, 2)">show details >></p>
-      </div>
-    </div>
-
-    <div class="filterDiv Research">
-      <img src="/proj_img/Covid19.jpg" alt="Epidemic" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><a href="https://github.com/Dingyx0100/EpidemicSimulation"><b>Analysis of Vaccination on Markovian Random Walk Model of epidemic proliferation</b></a></p>
-        <p class="content">The project simulated the spread of the epidemic under SIR model by using Markovian random walk and the paper then discussed the impact of epidemic prevention policies and vaccines on the spread of the epidemic.</p>
-        <p class="openBtn" onclick="testClick(this, 3)">show details >></p>
-      </div>
-    </div>
-    <div class="filterDiv Coursework">
-      <img src="/proj_img/SafeLogistics.png" alt="SafeLogistics" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><a href="https://github.com/ShupeiLi/database-project"><b>Safe Logistics: Django based web database inquiry system</b></a></p>
-        <p class="content">The project was built based on Python and Django and aimed to provide information for sellers, buyers and logistics companies. And it also provides info on domestic pandemic (covid-19) situation so that buyers can be notified on potential epidemic risk.</p>
-        <p class="openBtn" onclick="testClick(this, 4)">show details >></p>
-      </div>
-    </div>
-    <div class="filterDiv Forfun">
-      <img src="/proj_img/Yijing.jpg" alt="Cyber Divination" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><b>Cyber Divination</b></p>
-        <p class="content">Yijing is a Chinese ancient classic masterpiece that expounds the changes of the earth. Only one of the three parts of it exists now and it explains the connections between human and the nature. It has also been used for divination...</p>
-        <p class="openBtn" onclick="testClick(this, 5)">show details >></p>
-      </div>
-    </div>
-    <div class="filterDiv Research">
-      <img src="/proj_img/Yijing.jpg" alt="Spine Segmentation" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><b>Automated Spine Vertebrae Segmentation</b></p>
-        <p class="content">Automated Vertebrae Segmentation provides multiple benefits including improving time efficiency, facilitating 3D modeling and supporting diagnosis (Spinal Fractures, Tumors and Metastasis, Osteoporosis, etc.). 
-          Nevertheless, training a model on the 24 vertebrae is challenging, due to inaccuracy, it is very likely disorderly labeled. Training a model on separating the spine into Cervical, Thoracic and Lumbar is much easier and more accurate on the other hand. 
-          Therefore, can we think of a method that automatically separate the vertebrae within the three parts?</p>
-        <p class="openBtn" onclick="testClick(this, 6)">show details >></p>
-      </div>
-    </div>
-    <div class="filterDiv Research">
-      <img src="/proj_img/Yijing.jpg" alt="Brain MRI" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><b>Improve AI-based Model Robustness of Ventricle Segmentation from Multi-Contrast MRI via Active Learning</b></p>
-        <p class="content">Accurate and automatic ventricle segmentation is critical for diagnosing hydrocephalus and monitoring its progression in patients. However, during model training, we observed challenges in achieving robust performance across varying MRI 
-          contrasts and diverse patient populations. Active learning, known for its ability to minimize labeling costs and expedite model adaptation to different data populations, offers a promising solution to these issues. In the paper, we present a novel 
-          uncertainty-based metric designed to assess the informativeness of individual data samples. By integrating this metric into the active learning process, we aim to improve model robustness and generalization across multiple MRI contrasts, enabling more 
-          reliable ventricle segmentation even in complex clinical scenarios. </p>
-        <p class="openBtn" onclick="testClick(this, 7)">show details >></p>
-      </div>
-    </div>
-    <div class="filterDiv Research">
-      <img src="/proj_img/Yijing.jpg" alt="Cyber Divination" style="width:100%" class="w3-hover-opacity">
-      <div class="c">
-        <p class="caption"><b>Automatic video edition and highlighting on surgery videos</b></p>
-        <p class="content">Yijing is a Chinese ancient classic masterpiece that expounds the changes of the earth. Only one of the three parts of it exists now and it explains the connections between human and the nature. It has also been used for divination...</p>
-        <p class="openBtn" onclick="testClick(this, 8)">show details >></p>
-      </div>
-    </div>
+  <!-- Project grid: cards are generated from projects.js -->
+  <div class="skill-banner" id="skillBanner" hidden>
+    <span>Projects using <b id="skillBannerName"></b></span>
+    <button type="button" id="skillBannerClear"><i class="fa fa-times"></i> Show all</button>
   </div>
+  <div class="project-grid" id="projectGrid"></div>
 
-  <!-- Pagination -->
-  <div class="w3-center w3-padding-32">
-    <div class="w3-bar">
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">«</a>
-      <a href="#" class="w3-bar-item w3-black w3-button">1</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">2</a>
-      <a href="#" class="w3-bar-item w3-button w3-hover-black">»</a>
+  <!-- Project details modal -->
+  <dialog class="project-modal" id="projectModal">
+    <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+    <img id="modalImg" alt="">
+    <div class="modal-body">
+      <h3 id="modalTitle"></h3>
+      <p id="modalDesc"></p>
+      <div id="modalTags"></div>
+      <div id="modalLinks"></div>
+      <p class="modal-credit" id="modalCredit"></p>
     </div>
-  </div>
+  </dialog>
 
-  <!-- Images of Me -->
-  <div class="w3-row-padding w3-padding-16" id="about">
-    <div class="w3-col m4">
-      <img src="/img/Fu-rec.jpg" alt="Me" style="width:100%">
-    </div>
-    <div class="w3-col m4">
-      <img src="/img/Sakura-rec.jpg" alt="Me" style="width:100%">
-    </div>
-    <div class="w3-col m4">
-      <img src="/img/hiking-rec.jpg" alt="Me" style="width:100%">
-    </div>
-  </div>
-
-  <div class="w3-container w3-padding-large" style="margin-bottom:32px">
-    <h4><b>About Me</b></h4>
-    <p>
-      Hi, thanks for dropping by my homepage. I'm Yuxin Ding. I am currently working as a Data Scientist in Carina AI. 
-      I finished my master's program in Dec, 2023 and graduated from Johns Hopkins University, AMS department. 
-      I did my undergrad in Fudan University and I majored in Statistics back then. My research and programs mainly fall in the application area, 
-      and I am personally interested in Computer Vision and Optimization related topics. Please see above for my previous projects. Below is a brief 
-      list of my skill sets. And a resume is also attached below if you are interested.
-    </p>
-    <p>
-      <a href="https://docs.google.com/document/d/1FWaz82YFv0L-zRJHSdqGnONeis9MAkQ4/edit?usp=drive_link"><button class="w3-button w3-dark-grey w3-padding-large w3-margin-top w3-margin-bottom">
-        <i class="fa fa-download w3-margin-right"></i>See resume here
-      </button></a>
-    </p>
-    <hr>
-    
-    <h4><b>Technical Skills</b></h4>
-    <!-- Progress bars / Skills -->
-    <p>Python</p>
-    <p>My most frequently used coding language</p>
-    <div class="w3-grey">
-      <div class="w3-container w3-dark-grey w3-padding w3-center" style="width:90%">90%</div>
-    </div>
-    <p>Java</p>
-    <p>Like it but don't use much currently</p>
-    <div class="w3-grey">
-      <div class="w3-container w3-dark-grey w3-padding w3-center" style="width:60%">60%</div>
-    </div>
-    <p>R</p>
-    <p>Statisticians required skills</p>
-    <div class="w3-grey">
-      <div class="w3-container w3-dark-grey w3-padding w3-center" style="width:80%">80%</div>
-    </div>
-    <p>MySQL</p>
-    <p>Another required skills (sort of, :D), with relative link to python</p>
-    <div class="w3-grey">
-      <div class="w3-container w3-dark-grey w3-padding w3-center" style="width:70%">70%</div>
-    </div>
-    <p>HTML</p>
-    <p>Out of personal interests</p>
-    <div class="w3-grey">
-      <div class="w3-container w3-dark-grey w3-padding w3-center" style="width:30%">30%</div>
-    </div>
-    <p>Android Development</p>
-    <p>Basic coursework level</p>
-    <div class="w3-grey">
-      <div class="w3-container w3-dark-grey w3-padding w3-center" style="width:30%">30%</div>
-    </div>
-  <hr>
-  </div>
-  
-  <div class="w3-container w3-padding-large" style="margin-bottom:32px">
-    <h4><b>Teaching Assistance</b></h4>
-    <table class="w3-table-all w3-centered">
-      <tr>
-        <th>Course Num</th>
-        <th>Course Name</th>
-        <th>Semester</th>
-      </tr>
-      <tr>
-        <td>EN 553.636</td>
-        <td>Intro to Data Science</td>
-        <td>Spring 2023</td>
-      </tr>
-    </table>
-    <hr>
-  </div>
-  
-  <!-- Contact Section -->
-  <div class="w3-container w3-padding-large w3-grey">
-    <h4 id="contact"><b>Contact Me</b></h4>
-    <div class="w3-row-padding w3-center w3-padding-24" style="margin:0 -16px">
-      <div class="w3-third w3-dark-grey">
-        <p><i class="fa fa-envelope w3-xxlarge w3-text-light-grey"></i></p>
-        <p>yding64@jhu.edu</p>
+  <!-- ===== About me: intro card ===== -->
+  <section class="section" id="about">
+    <h2 class="section-title">About Me</h2>
+    <div class="intro-card">
+      <div class="intro-top">
+        <img class="intro-photo" src="./img/profile.jpg" alt="Portrait of Yuxin Ding">
+        <div class="intro-text">
+          <h3 class="intro-name">Yuxin Ding</h3>
+          <p class="intro-role">Machine Learning Engineer &middot; Medical AI &middot; Computer Vision</p>
+          <p>
+            I build machine learning systems for turning real-world needs into practical, impactful products.
+            At Carina Medical, I work across AutoBrachy&rsquo;s pipeline, from multi-site CT/MR data processing and
+            3D segmentation to geometry-aware reconstruction, dose optimization, and evaluation supporting
+            FDA 510(k) submissions.
+          </p>
+          <p>
+            Beyond work, I enjoy exploring new domains and data types. My projects include a local RAG chatbot for
+            product manuals, an AI agent for adjusting radiotherapy plans through natural-language instructions, and
+            earlier work involving traffic video analysis, speech and text processing, and epidemic modeling.
+          </p>
+          <div class="intro-actions">
+            <a class="pill primary" href="./resume/Yuxin_Ding_Resume.pdf" target="_blank" rel="noopener"><i class="fa fa-file-text-o"></i> Resume</a>
+            <a class="pill" href="https://github.com/Dingyx0100" target="_blank" rel="noopener"><i class="fa fa-github"></i> GitHub</a>
+            <a class="pill" href="https://www.linkedin.com/in/yuxin-ding-6898b425a/" target="_blank" rel="noopener"><i class="fa fa-linkedin"></i> LinkedIn</a>
+            <a class="pill" href="mailto:yxding2022@gmail.com"><i class="fa fa-envelope-o"></i> Email</a>
+          </div>
+        </div>
       </div>
-      <div class="w3-third w3-teal">
-        <p><i class="fa fa-map-marker w3-xxlarge w3-text-light-grey"></i></p>
-        <p>Baltimore, MD</p>
-      </div>
-      <div class="w3-third w3-dark-grey">
-        <p><i class="fa fa-phone w3-xxlarge w3-text-light-grey"></i></p>
-        <p>(443)799-7315</p>
+      <div class="stats" id="stats">
+        <div class="stat">
+          <div class="stat-num"><span data-count="400">400</span>+</div>
+          <div class="stat-label">clinical cases in the ML pipeline</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num">5&ndash;6</div>
+          <div class="stat-label">institutions' data harmonized</div>
+        </div>
+        <div class="stat">
+          <div class="stat-num"><span data-count="3">3</span>+</div>
+          <div class="stat-label">years building medical AI</div>
+        </div>
+        <div class="stat stat-badge" id="awsStat" data-verify="https://www.credly.com/badges/c06b86bd-33de-4fc6-bb2f-3b57680ecae7/public_url">
+          <div class="stat-num"><img class="badge-mini" id="badgeMini" src="./img/aws-badge.png" alt="AWS Certified Machine Learning Engineer - Associate badge"><i class="fa fa-certificate" id="badgeIcon"></i> AWS</div>
+          <div class="stat-label">Certified ML Engineer &ndash; Associate (2026)</div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Footer
-  <footer class="w3-container w3-padding-32 w3-dark-grey">
-  <div class="w3-row-padding">
-    <div class="w3-third">
-      <h3>FOOTER</h3>
-      <p>Praesent tincidunt sed tellus ut rutrum. Sed vitae justo condimentum, porta lectus vitae, ultricies congue gravida diam non fringilla.</p>
-      <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+  <!-- ===== Experience timeline (click an entry to expand) ===== -->
+  <section class="section" id="experience">
+    <h2 class="section-title">Experience &amp; Education</h2>
+    <div class="timeline">
+      <details class="tl-item" open>
+        <summary>
+          <span class="tl-when">Sep 2023 &ndash; Present</span>
+          <span class="tl-title">Data Scientist</span>
+          <span class="tl-org">Carina Medical LLC &middot; Baltimore, MD / Remote</span>
+        </summary>
+        <ul class="tl-body">
+          <li>Maintain and extend AutoBrachy's ML data and training pipeline across 5&ndash;6 institutions and 400+ clinical cases, with data QA, ROI-definition reconciliation and detection of corrupted, duplicated or mismatched DICOM data.</li>
+          <li>Reproduced out-of-distribution segmentation failures and built simulation-based augmentation for them, raising tandem-and-ring processing success from 129/145 (89%) to 145/145 (100%).</li>
+          <li>Developed geometry-aware post-processing for vertebral separation, applicator reconstruction and merged-needle separation (trajectory prediction, Hungarian matching, spline reconstruction).</li>
+          <li>Implemented dose calculation and constrained dwell-time optimization, plus reproducible multi-site evaluation supporting FDA 510(k) documentation.</li>
+        </ul>
+      </details>
+      <details class="tl-item">
+        <summary>
+          <span class="tl-when">Sep 2022 &ndash; Dec 2023</span>
+          <span class="tl-title">M.S.E. in Applied Mathematics and Statistics</span>
+          <span class="tl-org">Johns Hopkins University &middot; Baltimore, MD</span>
+        </summary>
+        <ul class="tl-body">
+          <li>Teaching assistant for EN 553.636 Introduction to Data Science (Spring 2023).</li>
+        </ul>
+      </details>
+      <details class="tl-item">
+        <summary>
+          <span class="tl-when">Jun &ndash; Aug 2021</span>
+          <span class="tl-title">Software Engineering Intern</span>
+          <span class="tl-org">VMware &middot; Beijing, China</span>
+        </summary>
+        <ul class="tl-body">
+          <li>Built Python tooling to monitor and visualize algorithm outputs and long-running jobs, and benchmarked clustering metrics and bin-packing algorithms for algorithm selection.</li>
+        </ul>
+      </details>
+      <details class="tl-item">
+        <summary>
+          <span class="tl-when">Sep 2018 &ndash; Jun 2022</span>
+          <span class="tl-title">B.S. in Statistics, Minor in Data Science</span>
+          <span class="tl-org">Fudan University &middot; Shanghai, China</span>
+        </summary>
+      </details>
     </div>
-  
-    <div class="w3-third">
-      <h3>BLOG POSTS</h3>
-      <ul class="w3-ul w3-hoverable">
-        <li class="w3-padding-16">
-          <img src="/w3images/workshop.jpg" class="w3-left w3-margin-right" style="width:50px">
-          <span class="w3-large">Lorem</span><br>
-          <span>Sed mattis nunc</span>
-        </li>
-        <li class="w3-padding-16">
-          <img src="/w3images/gondol.jpg" class="w3-left w3-margin-right" style="width:50px">
-          <span class="w3-large">Ipsum</span><br>
-          <span>Praes tinci sed</span>
-        </li> 
-      </ul>
-    </div>
+  </section>
 
-    <div class="w3-third">
-      <h3>POPULAR TAGS</h3>
-      <p>
-        <span class="w3-tag w3-black w3-margin-bottom">Travel</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">New York</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">London</span>
-        <span class="w3-tag w3-grey w3-small w3-margin-bottom">IKEA</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">NORWAY</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">DIY</span>
-        <span class="w3-tag w3-grey w3-small w3-margin-bottom">Ideas</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">Baby</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">Family</span>
-        <span class="w3-tag w3-grey w3-small w3-margin-bottom">News</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">Clothing</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">Shopping</span>
-        <span class="w3-tag w3-grey w3-small w3-margin-bottom">Sports</span> <span class="w3-tag w3-grey w3-small w3-margin-bottom">Games</span>
-      </p>
+  <!-- ===== Skills: chips with data-match link to project tags (see projects.js) ===== -->
+  <section class="section" id="skills">
+    <h2 class="section-title">Skills</h2>
+    <p class="section-hint"><span class="chip linked demo">blue</span> skills link to projects. Click one to see where I used it.</p>
+    <div class="skills-grid">
+      <div class="skill-group">
+        <h3><i class="fa fa-eye"></i> Machine Learning &amp; Computer Vision</h3>
+        <span class="chip">PyTorch</span>
+        <span class="chip">scikit-learn</span>
+        <span class="chip">OpenCV</span>
+        <span class="chip">3D segmentation</span>
+        <span class="chip" data-match="YOLOv5,StrongSORT">Object detection &amp; tracking</span>
+        <span class="chip" data-match="LSTM,GRU">Sequence models</span>
+        <span class="chip">Medical image analysis</span>
+        <span class="chip">Data augmentation</span>
+        <span class="chip">Model evaluation</span>
+      </div>
+      <div class="skill-group">
+        <h3><i class="fa fa-comments-o"></i> LLMs &amp; RAG</h3>
+        <span class="chip" data-match="RAG">RAG</span>
+        <span class="chip" data-match="LLM agent">LLM agents</span>
+        <span class="chip" data-match="LangGraph">LangGraph</span>
+        <span class="chip" data-match="Qdrant,BM25">Hybrid retrieval</span>
+        <span class="chip" data-match="Qwen3,Ollama">Local LLMs (Qwen3, Ollama)</span>
+        <span class="chip" data-match="FastAPI">FastAPI</span>
+      </div>
+      <div class="skill-group">
+        <h3><i class="fa fa-line-chart"></i> Optimization &amp; Statistics</h3>
+        <span class="chip" data-match="CVXPY">CVXPY</span>
+        <span class="chip" data-match="Convex optimization">Numerical optimization</span>
+        <span class="chip" data-match="Markov chains,Simulation">Stochastic simulation</span>
+        <span class="chip">NumPy</span>
+        <span class="chip">SciPy</span>
+        <span class="chip">pandas</span>
+        <span class="chip">Hypothesis testing</span>
+        <span class="chip">Non-inferiority analysis</span>
+      </div>
+      <div class="skill-group">
+        <h3><i class="fa fa-heartbeat"></i> Medical Imaging &amp; Radiotherapy</h3>
+        <span class="chip" data-match="DICOM">DICOM</span>
+        <span class="chip">CT / MR imaging</span>
+        <span class="chip">SimpleITK</span>
+        <span class="chip">pydicom</span>
+        <span class="chip" data-match="DICOM">RTSTRUCT / RTDOSE</span>
+        <span class="chip">TG-43 dose calculation</span>
+        <span class="chip" data-match="DVH">DVH analysis</span>
+      </div>
     </div>
+    <div class="skill-tools">
+      <b>Languages &amp; tools</b>
+      <span class="chip">Python</span>
+      <span class="chip" data-match="SQL">SQL</span>
+      <span class="chip">Java</span>
+      <span class="chip">R</span>
+      <span class="chip" data-match="Django">Django</span>
+      <span class="chip">Git</span>
+      <span class="chip">Linux</span>
+      <span class="chip">Docker</span>
+    </div>
+  </section>
 
-  </div>
-  </footer> -->
-  <!--   <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-opacity">w3.css</a> -->
-  <div class="w3-black w3-center w3-padding-24">---The End---</div>
+  <!-- ===== Contact ===== -->
+  <section class="section" id="contact">
+    <h2 class="section-title">Contact</h2>
+    <div class="contact-grid">
+      <a class="contact-card" id="emailCard" href="mailto:yxding2022@gmail.com" title="Write me an email">
+        <span class="contact-icon"><i class="fa fa-envelope"></i></span>
+        <span class="contact-label">Email</span>
+        <span class="contact-value">yxding2022@gmail.com</span>
+        <span class="contact-hint" id="emailHint">Click to write me an email</span>
+      </a>
+      <a class="contact-card" href="https://www.linkedin.com/in/yuxin-ding-6898b425a/" target="_blank" rel="noopener">
+        <span class="contact-icon"><i class="fa fa-linkedin"></i></span>
+        <span class="contact-label">LinkedIn</span>
+        <span class="contact-value">Yuxin Ding</span>
+      </a>
+      <a class="contact-card" href="https://github.com/Dingyx0100" target="_blank" rel="noopener">
+        <span class="contact-icon"><i class="fa fa-github"></i></span>
+        <span class="contact-label">GitHub</span>
+        <span class="contact-value">Dingyx0100</span>
+      </a>
+    </div>
+  </section>
+
+  <footer class="site-footer">&copy; 2026 Yuxin Ding</footer>
 
 <!-- End page content -->
 </div>
@@ -413,70 +777,316 @@ function w3_close() {
     document.getElementById("myOverlay").style.display = "none";
 }
 
-filterSelection("all")
-function filterSelection(c) {
-  var x, i;
-  x = document.getElementsByClassName("filterDiv");
-  if (c == "all") c = "";
-  for (i = 0; i < x.length; i++) {
-    w3RemoveClass(x[i], "show");
-    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
-  }
+// ---------- Project grid ----------
+var CATEGORY_LABELS = { Research: "Research", Personal: "Personal", Coursework: "Coursework", Forfun: "For fun" };
+
+function el(tag, className, text) {
+  var e = document.createElement(tag);
+  if (className) e.className = className;
+  if (text) e.textContent = text;
+  return e;
 }
 
-function w3AddClass(element, name) {
-  var i, arr1, arr2;
-  arr1 = element.className.split(" ");
-  arr2 = name.split(" ");
-  for (i = 0; i < arr2.length; i++) {
-    if (arr1.indexOf(arr2[i]) == -1) {element.className += " " + arr2[i];}
-  }
-}
-
-function w3RemoveClass(element, name) {
-  var i, arr1, arr2;
-  arr1 = element.className.split(" ");
-  arr2 = name.split(" ");
-  for (i = 0; i < arr2.length; i++) {
-    while (arr1.indexOf(arr2[i]) > -1) {
-      arr1.splice(arr1.indexOf(arr2[i]), 1);     
-    }
-  }
-  element.className = arr1.join(" ");
-}
-
-// Add active class to the current button (highlight it)
-var btnContainer = document.getElementById("myBtnContainer");
-var btns = btnContainer.getElementsByClassName("btn");
-for (var i = 0; i < btns.length; i++) {
-  btns[i].addEventListener("click", function(){
-    var current = document.getElementsByClassName("active");
-    current[0].className = current[0].className.replace(" active", "");
-    this.className += " active";
+function linkEls(links, className) {
+  return Object.keys(links || {}).map(function (label) {
+    var a = el("a", className);
+    a.href = links[label];
+    a.target = "_blank";
+    a.rel = "noopener";
+    var icon = { "Code": "fa-github", "Paper": "fa-file-text-o" }[label] || "fa-external-link";
+    a.innerHTML = '<i class="fa ' + icon + '"></i> ';
+    a.appendChild(document.createTextNode(label));
+    a.addEventListener("click", function (ev) { ev.stopPropagation(); });
+    return a;
   });
 }
 
-function $(clsname){
-  return document.getElementsByClassName(clsname);
+function renderProjects() {
+  var grid = document.getElementById("projectGrid");
+  PROJECTS.forEach(function (p, i) {
+    if (p.hidden) return;
+    var card = el("article", "card");
+    card.dataset.category = p.category;
+    card.dataset.tags = (p.tags || []).join("|").toLowerCase();
+    card.dataset.short = p.short || p.title.split(":")[0];
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", p.title + " - show details");
+
+    var img = el("img", "card-img");
+    img.src = p.thumb || p.img;
+    img.alt = p.title;
+    img.loading = "lazy";
+    card.appendChild(img);
+
+    var body = el("div", "card-body");
+    body.appendChild(el("h3", "card-title clamp", p.title));
+    body.appendChild(el("p", "card-desc clamp", p.description));
+    var footer = el("div", "card-footer");
+    footer.appendChild(el("span", "badge", CATEGORY_LABELS[p.category] || p.category));
+    linkEls(p.links, "card-link").forEach(function (a) { footer.appendChild(a); });
+    body.appendChild(footer);
+    card.appendChild(body);
+
+    card.addEventListener("click", function () { openProject(i); });
+    card.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openProject(i); }
+    });
+    grid.appendChild(card);
+  });
 }
-// 立即执行函数，判断文本长度是否过长
-(function(){
-  for (var i = 0; i < $('content').length; i++){
-      $('content')[i].style.cssText = "padding:1px 0;overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;"
-  }
-})()
-//点击事件，控制内容显示、收起
-function testClick(elmt, i){
-  let text = elmt.innerText;
-  if(text == 'show details >>'){
-      $('content')[i].style.cssText = "color:black";
-      elmt.innerHTML = '<< collapse'
-  }
-  if(text == '<< collapse'){
-      $('content')[i].style.cssText = "overflow: hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;";
-      elmt.innerHTML = 'show details >>'
-  }
+
+function openProject(i) {
+  var p = PROJECTS[i];
+  document.getElementById("modalImg").src = p.img;
+  document.getElementById("modalImg").alt = p.title;
+  document.getElementById("modalTitle").textContent = p.title;
+  document.getElementById("modalDesc").textContent = p.description;
+  var tags = document.getElementById("modalTags");
+  tags.innerHTML = "";
+  (p.tags || []).forEach(function (t) { tags.appendChild(el("span", "tag", t)); });
+  var links = document.getElementById("modalLinks");
+  links.innerHTML = "";
+  linkEls(p.links, "w3-button w3-dark-grey w3-margin-top").forEach(function (a) { links.appendChild(a); });
+  var credit = document.getElementById("modalCredit");
+  credit.textContent = p.credit || "";
+  credit.hidden = !p.credit;
+  document.getElementById("projectModal").showModal();
 }
+
+var modal = document.getElementById("projectModal");
+document.getElementById("modalClose").addEventListener("click", function () { modal.close(); });
+// click on the dark backdrop closes the modal
+modal.addEventListener("click", function (ev) { if (ev.target === modal) modal.close(); });
+
+function filterSelection(category) {
+  var cards = document.querySelectorAll("#projectGrid .card");
+  cards.forEach(function (c) {
+    c.hidden = !(category === "all" || c.dataset.category === category);
+  });
+}
+
+document.querySelectorAll("#myBtnContainer .btn").forEach(function (btn) {
+  btn.addEventListener("click", function () {
+    document.querySelector("#myBtnContainer .btn.active").classList.remove("active");
+    btn.classList.add("active");
+    filterSelection(btn.dataset.filter);
+  });
+});
+
+// ---------- Skills <-> projects ----------
+function cardsForSkill(chip) {
+  var wanted = chip.dataset.match.toLowerCase().split(",");
+  return Array.prototype.filter.call(document.querySelectorAll("#projectGrid .card"), function (c) {
+    var tags = c.dataset.tags.split("|");
+    return wanted.some(function (w) { return tags.indexOf(w.trim()) > -1; });
+  });
+}
+
+function clearSpotlight() {
+  document.getElementById("projectGrid").classList.remove("spotlight");
+  document.querySelectorAll("#projectGrid .card.match").forEach(function (c) { c.classList.remove("match"); });
+  document.querySelectorAll(".chip.active").forEach(function (c) { c.classList.remove("active"); });
+  document.getElementById("skillBanner").hidden = true;
+}
+
+function spotlightSkill(chip) {
+  var wasActive = chip.classList.contains("active");
+  clearSpotlight();
+  if (wasActive) return;
+  filterSelection("all");                                   // show every category
+  document.querySelector("#myBtnContainer .btn.active").classList.remove("active");
+  document.querySelector('#myBtnContainer .btn[data-filter="all"]').classList.add("active");
+  cardsForSkill(chip).forEach(function (c) { c.classList.add("match"); });
+  document.getElementById("projectGrid").classList.add("spotlight");
+  chip.classList.add("active");
+  document.getElementById("skillBannerName").textContent = chip.textContent;
+  document.getElementById("skillBanner").hidden = false;
+  document.getElementById("Project").scrollIntoView({ behavior: "smooth" });
+}
+
+function initSkills() {
+  document.querySelectorAll(".chip[data-match]").forEach(function (chip) {
+    var cards = cardsForSkill(chip);
+    if (!cards.length) return;              // no visible project uses it: plain chip
+    chip.classList.add("linked");
+    chip.tabIndex = 0;
+    chip.setAttribute("role", "button");
+    chip.dataset.tip = "Used in: " + cards.map(function (c) { return c.dataset.short; }).join(", ");
+    chip.addEventListener("click", function () { spotlightSkill(chip); });
+    chip.addEventListener("keydown", function (ev) {
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); spotlightSkill(chip); }
+    });
+  });
+  document.getElementById("skillBannerClear").addEventListener("click", clearSpotlight);
+  // choosing a category filter ends the skill spotlight
+  document.querySelectorAll("#myBtnContainer .btn").forEach(function (b) {
+    b.addEventListener("click", clearSpotlight);
+  });
+  // timeline entries without details don't expand
+  document.querySelectorAll(".tl-item").forEach(function (d) {
+    if (!d.querySelector(".tl-body")) {
+      d.classList.add("no-body");
+      d.querySelector("summary").addEventListener("click", function (ev) { ev.preventDefault(); });
+    }
+  });
+}
+
+// ---------- Count-up numbers in the intro card ----------
+function initCounters() {
+  var nums = document.querySelectorAll("#stats [data-count]");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduce || !("IntersectionObserver" in window)) return;   // final values are already in the HTML
+  nums.forEach(function (n) { n.textContent = n.dataset.from || "0"; });
+  var obs = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting) return;
+    obs.disconnect();
+    var start = performance.now(), dur = 1200;
+    (function tick(now) {
+      var t = Math.min(1, (now - start) / dur), e = 1 - Math.pow(1 - t, 3);
+      nums.forEach(function (n) {
+        var from = +(n.dataset.from || 0), to = +n.dataset.count;
+        n.textContent = Math.round(from + (to - from) * e);
+      });
+      if (t < 1) requestAnimationFrame(tick);
+    })(start);
+    // in case animation frames are throttled (background tab), make sure the final values land
+    setTimeout(function () { nums.forEach(function (n) { n.textContent = n.dataset.count; }); }, dur + 300);
+  }, { threshold: 0.4 });
+  obs.observe(document.getElementById("stats"));
+}
+
+// ---------- Sidebar scroll-spy ----------
+function initScrollSpy() {
+  // The current section is the last one whose top has scrolled past 40% of the window.
+  // At the very bottom of the page the last section (Contact) wins, since it can never reach that line.
+  var links = Array.prototype.slice.call(document.querySelectorAll("#sideNav .side-link"));
+  var sections = links.map(function (l) { return document.getElementById(l.getAttribute("href").slice(1)); });
+  var queued = false;
+
+  function setActive(i) {
+    links.forEach(function (l, j) { l.classList.toggle("active", j === i); });
+  }
+  function update() {
+    queued = false;
+    var line = window.innerHeight * 0.4, current = 0;
+    sections.forEach(function (s, i) { if (s.getBoundingClientRect().top <= line) current = i; });
+    var doc = document.documentElement;
+    if (window.innerHeight + window.scrollY >= doc.scrollHeight - 4) current = sections.length - 1;
+    setActive(current);
+  }
+  window.addEventListener("scroll", function () {
+    if (!queued) { queued = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  window.addEventListener("resize", update);
+  // a clicked link is highlighted right away, even if the section can't scroll to the top
+  links.forEach(function (l, i) {
+    l.addEventListener("click", function () { setActive(i); setTimeout(update, 600); });
+  });
+  update();
+}
+
+renderProjects();
+initSkills();
+initCounters();
+initScrollSpy();
+initBadge();
+
+// ---------- AWS badge: spins out to the middle of the screen, spins back on any click ----------
+function initBadge() {
+  var stat = document.getElementById("awsStat"), mini = document.getElementById("badgeMini");
+  var fly = null, backdrop = null, anim = null, cleanupTimer = null;
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function ready() {                       // only interactive if img/aws-badge.png exists
+    stat.classList.add("ready");
+    stat.tabIndex = 0;
+    stat.setAttribute("role", "button");
+    stat.title = "Click to see the badge";
+  }
+  if (mini.complete && mini.naturalWidth) ready(); else mini.addEventListener("load", ready);
+  // no badge image: the stat simply opens the Credly page instead
+  stat.addEventListener("click", function () {
+    if (!stat.classList.contains("ready") && stat.dataset.verify) window.open(stat.dataset.verify, "_blank", "noopener");
+  });
+
+  // transform that places the big centred badge exactly over the small one
+  function fromMini(size, left, top) {
+    var r = mini.getBoundingClientRect();
+    var dx = r.left + r.width / 2 - (left + size / 2), dy = r.top + r.height / 2 - (top + size / 2);
+    return "perspective(900px) translate(" + dx + "px," + dy + "px) scale(" + r.width / size + ") rotateY(0deg)";
+  }
+  var CENTER = "perspective(900px) translate(0px,0px) scale(1) rotateY(720deg)";
+  var timing = { duration: reduce ? 1 : 900, easing: "cubic-bezier(.2,.8,.2,1)", fill: "forwards" };
+
+  function show() {
+    if (fly || !stat.classList.contains("ready")) return;
+    var size = Math.min(340, window.innerWidth * 0.7, window.innerHeight * 0.7);
+    var left = (window.innerWidth - size) / 2, top = (window.innerHeight - size) / 2;
+    backdrop = document.createElement("div");
+    backdrop.className = "badge-backdrop";
+    backdrop.addEventListener("click", hide);
+    if (stat.dataset.verify) {                // "Verify on Credly" button under the badge
+      var verify = document.createElement("a");
+      verify.className = "badge-verify";
+      verify.href = stat.dataset.verify;
+      verify.target = "_blank";
+      verify.rel = "noopener";
+      verify.innerHTML = '<i class="fa fa-check-circle"></i> Verify on Credly';
+      verify.style.top = Math.min(top + size + 20, window.innerHeight - 56) + "px";
+      verify.addEventListener("click", function (ev) { ev.stopPropagation(); });
+      backdrop.appendChild(verify);
+    }
+    fly = document.createElement("img");
+    fly.className = "badge-fly";
+    fly.src = mini.src;
+    fly.alt = mini.alt;
+    fly.style.cssText = "width:" + size + "px;height:" + size + "px;left:" + left + "px;top:" + top + "px;";
+    fly.dataset.size = size; fly.dataset.left = left; fly.dataset.top = top;
+    document.body.append(backdrop, fly);
+    mini.style.visibility = "hidden";
+    anim = fly.animate([{ transform: fromMini(size, left, top) }, { transform: CENTER }], timing);
+    requestAnimationFrame(function () { backdrop.classList.add("show"); });
+  }
+
+  function hide() {
+    if (!fly || fly.dataset.closing) return;
+    fly.dataset.closing = "1";
+    // fully open: spin back from the centre; still flying out: reverse from wherever it is now
+    var d = fly.dataset, from = anim.playState === "finished" ? CENTER : getComputedStyle(fly).transform;
+    anim.cancel();
+    backdrop.classList.remove("show");
+    anim = fly.animate([{ transform: from === "none" ? CENTER : from },
+                        { transform: fromMini(+d.size, +d.left, +d.top) }], timing);
+    var done = function () {
+      clearTimeout(cleanupTimer);
+      if (!fly) return;
+      fly.remove(); backdrop.remove();
+      fly = backdrop = anim = null;
+      mini.style.visibility = "";
+    };
+    anim.onfinish = done;
+    cleanupTimer = setTimeout(done, timing.duration + 200);       // in case onfinish never fires
+  }
+
+  stat.addEventListener("click", show);
+  stat.addEventListener("keydown", function (ev) {
+    if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); show(); }
+  });
+  document.addEventListener("keydown", function (ev) { if (ev.key === "Escape") hide(); });
+  window.addEventListener("resize", hide);
+}
+
+// Email card: the mailto link opens the visitor's mail app; also copy the
+// address, so it still works for visitors without a mail app set up.
+document.getElementById("emailCard").addEventListener("click", function () {
+  if (!navigator.clipboard) return;
+  navigator.clipboard.writeText("yxding2022@gmail.com").then(function () {
+    var hint = document.getElementById("emailHint");
+    hint.textContent = "Address copied to clipboard";
+    setTimeout(function () { hint.textContent = "Click to write me an email"; }, 2500);
+  }).catch(function () {});
+});
 </script>
 
 </body>
