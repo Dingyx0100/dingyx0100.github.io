@@ -1055,6 +1055,7 @@ function initEarlierScroller() {
 
 function openProject(i) {
   var p = PROJECTS[i];
+  track("project/" + (p.short || p.title.split(":")[0]), "Opened project");
   var img = document.getElementById("modalImg"), video = document.getElementById("modalVideo");
   img.hidden = !!p.video;
   video.hidden = !p.video;
@@ -1152,6 +1153,7 @@ function spotlightSkill(chip) {
   var wasActive = chip.classList.contains("active");
   clearSpotlight();
   if (wasActive) return;
+  track("skill/" + chip.textContent.trim(), "Clicked skill");
   filterSelection("all");                                   // show every category
   document.querySelector("#myBtnContainer .btn.active").classList.remove("active");
   document.querySelector('#myBtnContainer .btn[data-filter="all"]').classList.add("active");
@@ -1346,7 +1348,26 @@ document.getElementById("emailCard").addEventListener("click", function () {
     setTimeout(function () { hint.textContent = "Click to write me an email"; }, 2500);
   }).catch(function () {});
 });
+
+// Anonymous visit stats (GoatCounter: no cookies, no IPs stored, dashboard is private).
+// track() records an event; it does nothing if the counter is blocked or not loaded yet.
+function track(path, title) {
+  if (window.goatcounter && window.goatcounter.count) {
+    window.goatcounter.count({ path: path, title: title, event: true });
+  }
+}
+// Link clicks: resume, code, paper, social and email links, wherever they are on the page.
+document.addEventListener("click", function (ev) {
+  var a = ev.target.closest && ev.target.closest("a[href]");
+  if (!a) return;
+  var href = a.getAttribute("href");
+  if (href.charAt(0) === "#") return;                        // in-page navigation
+  var label = (a.textContent.trim() || a.getAttribute("aria-label") || a.title || "").slice(0, 40);
+  var where = /resume/i.test(href) ? "Resume" : href.replace(/^mailto:.*/, "Email").replace(/^https?:\/\/(www\.)?/, "").split("/").slice(0, 2).join("/");
+  track("link/" + where + (label ? " (" + label + ")" : ""), "Clicked link");
+}, true);
 </script>
+<script data-goatcounter="https://chris2026.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
 </body>
 </html>
