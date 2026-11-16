@@ -1,0 +1,146 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 640 400">
+  <!-- Schematic AutoBrachy workflow drawn from scratch (no patient or product imagery):
+       CT scan -> contours -> applicator -> dose plan. Panels are stylized axial pelvis slices. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0c3b5e"/>
+      <stop offset="1" stop-color="#0369a1"/>
+    </linearGradient>
+    <radialGradient id="gFat" cx="50%" cy="50%" r="55%">
+      <stop offset="0" stop-color="#3a3e45"/><stop offset="1" stop-color="#272a30"/>
+    </radialGradient>
+    <radialGradient id="gMuscle" cx="45%" cy="40%" r="65%">
+      <stop offset="0" stop-color="#7a7f87"/><stop offset="1" stop-color="#585d64"/>
+    </radialGradient>
+    <radialGradient id="gBone" cx="40%" cy="35%" r="70%">
+      <stop offset="0" stop-color="#f7f8fa"/><stop offset="1" stop-color="#c3c8cf"/>
+    </radialGradient>
+    <radialGradient id="gBladder" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#5a5f67"/><stop offset="1" stop-color="#454a51"/>
+    </radialGradient>
+    <radialGradient id="gSoft" cx="50%" cy="45%" r="60%">
+      <stop offset="0" stop-color="#80858d"/><stop offset="1" stop-color="#60656d"/>
+    </radialGradient>
+    <radialGradient id="gMask" cx="50%" cy="50%" r="60%">
+      <stop offset="0" stop-color="#7dd3fc" stop-opacity="0.85"/><stop offset="1" stop-color="#0ea5e9" stop-opacity="0.55"/>
+    </radialGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="0.7"/></filter>
+    <!-- stylized axial pelvis slice in a 128x128 panel (anterior at top) -->
+    <g id="slice">
+      <rect width="128" height="128" rx="10" fill="#0d1016"/>
+      <!-- body outline: subcutaneous and pelvic fat -->
+      <path d="M64 20 C90 19 114 31 119 54 C123 74 113 96 90 104 C80 107 72 106 64 106 C56 106 48 107 38 104 C15 96 5 74 9 54 C14 31 38 19 64 20 Z" fill="url(#gFat)" stroke="#50555d" stroke-width="1.2"/>
+      <g filter="url(#soft)">
+        <!-- muscles: iliopsoas (front), obturator internus (side walls), gluteus maximus (back) -->
+        <g fill="url(#gMuscle)">
+          <ellipse cx="31" cy="38" rx="11" ry="7" transform="rotate(-25 31 38)"/>
+          <ellipse cx="97" cy="38" rx="11" ry="7" transform="rotate(25 97 38)"/>
+          <path d="M14 70 C16 90 32 102 52 101 C44 94 36 86 31 74 C26 74 20 72 14 70 Z"/>
+          <path d="M114 70 C112 90 96 102 76 101 C84 94 92 86 97 74 C102 74 108 72 114 70 Z"/>
+          <path d="M41 51 C45 58 45 70 41 78 L38 77 C41 69 41 59 38 53 Z"/>
+          <path d="M87 51 C83 58 83 70 87 78 L90 77 C87 69 87 59 90 53 Z"/>
+        </g>
+        <!-- pelvic organs: bladder (fluid), cervix, rectum with an air pocket -->
+        <ellipse cx="64" cy="43" rx="16" ry="10" fill="url(#gBladder)"/>
+        <ellipse cx="64" cy="63" rx="11" ry="9" fill="url(#gSoft)"/>
+        <ellipse cx="64" cy="83" rx="7.5" ry="6.5" fill="url(#gSoft)"/>
+        <ellipse cx="65" cy="82" rx="3.2" ry="2.4" fill="#0d1016"/>
+      </g>
+      <!-- bone: hip bones (acetabulum and pubic rami), femoral heads, coccyx -->
+      <!-- each hemipelvis as one continuous bone: medial acetabular wall running forward into the
+           superior pubic ramus. The rami stop short of the midline: the symphysis lies below this level. -->
+      <g fill="none" stroke="url(#gBone)" stroke-width="4.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M35 71 Q40 58 34 47 Q35 37 45 31 Q52 28 58.5 28"/>
+        <path d="M93 71 Q88 58 94 47 Q93 37 83 31 Q76 28 69.5 28"/>
+      </g>
+      <g fill="url(#gBone)">
+        <circle cx="26" cy="58" r="8"/>
+        <circle cx="102" cy="58" r="8"/>
+        <ellipse cx="64" cy="100" rx="6" ry="3.5"/>
+      </g>
+      <!-- applicator tandem in the cervical canal: metal shows as a bright dot -->
+      <circle cx="64" cy="63" r="2.3" fill="#ffffff"/>
+    </g>
+    <g id="contours" fill="none" stroke-width="2.2">
+      <ellipse cx="64" cy="43" rx="17" ry="11" stroke="#fbbf24"/>
+      <ellipse cx="64" cy="63" rx="12.5" ry="10.5" stroke="#f87171"/>
+      <ellipse cx="64" cy="83" rx="8.5" ry="7.5" stroke="#34d399"/>
+    </g>
+  </defs>
+
+  <rect width="640" height="400" fill="url(#bg)"/>
+
+  <text x="320" y="62" text-anchor="middle" font-family="Raleway, Arial, sans-serif" font-size="28" font-weight="700" fill="#ffffff">AutoBrachy</text>
+  <text x="320" y="88" text-anchor="middle" font-family="Raleway, Arial, sans-serif" font-size="14" fill="#e0f2fe" opacity="0.85">From planning CT to a draft brachytherapy plan</text>
+
+  <!-- 1. CT scan -->
+  <use xlink:href="#slice" href="#slice" x="24" y="122"/>
+
+  <!-- 2. Contours: target and organs at risk -->
+  <g transform="translate(176 122)">
+    <use xlink:href="#slice" href="#slice"/>
+    <use xlink:href="#contours" href="#contours"/>
+  </g>
+
+  <!-- 3. Applicator: reconstructed tandem and ring with dwell positions (3-D view) -->
+  <g transform="translate(328 122)">
+    <rect width="128" height="128" rx="10" fill="#0d1016"/>
+    <!-- front (coronal) view. Vagina: wide vault (fornices) at the top, narrowing toward the opening -->
+    <path d="M37 85 C37 76 44 72 51 74 L77 74 C84 72 91 76 91 85 C91 94 81 99 77 105 L76 124 L52 124 L51 105 C47 99 37 94 37 85 Z" fill="#24272d" stroke="#555a62" stroke-width="1.1"/>
+    <!-- uterus body and cervix; the cervix projects down into the vaginal vault -->
+    <path d="M64 12 C85 11 95 27 90 45 C88 55 84 59 81 62 C78.5 64.5 77 67 77 71 L77 86 C77 90.5 71 93 64 93 C57 93 51 90.5 51 86 L51 71 C51 67 49.5 64.5 47 62 C44 59 40 55 38 45 C33 27 43 11 64 12 Z" fill="url(#gSoft)" stroke="#8a8f97" stroke-width="1"/>
+    <!-- uterine cavity -->
+    <path d="M64 22 C71 22 76 30 73 40 C71 47 67 52 64 56 C61 52 57 47 55 40 C52 30 57 22 64 22 Z" fill="#4c5159"/>
+    <!-- target outline around the cervix -->
+    <ellipse cx="64" cy="73" rx="20" ry="17" fill="none" stroke="#f87171" stroke-width="1.6" stroke-dasharray="4 3" opacity="0.9"/>
+    <!-- segmented applicator: tandem through the cervical canal into the uterus, ring in the vault around the cervix -->
+    <g filter="url(#soft)" fill="url(#gMask)">
+      <path d="M60 24 C61 21 67 21 68 24 L68.5 120 C66 123 62 123 59.5 120 Z"/>
+      <path d="M64 78 C78 78 89 81 89 86 C89 91 78 94 64 94 C50 94 39 91 39 86 C39 81 50 78 64 78 Z M64 83 C54 83 46 84 46 86 C46 88 54 89 64 89 C74 89 82 88 82 86 C82 84 74 83 64 83 Z" fill-rule="evenodd"/>
+    </g>
+    <!-- centerline track through the mask -->
+    <g fill="none" stroke="#ffffff" stroke-width="1.6" stroke-linecap="round">
+      <path d="M64 24 L64 121"/>
+      <ellipse cx="64" cy="86" rx="21" ry="5.5"/>
+    </g>
+    <!-- source dwell positions along the track -->
+    <g fill="#38bdf8" stroke="#0d1016" stroke-width="0.8">
+      <circle cx="64" cy="31" r="2.8"/><circle cx="64" cy="41" r="2.8"/><circle cx="64" cy="51" r="2.8"/>
+      <circle cx="64" cy="61" r="2.8"/><circle cx="64" cy="71" r="2.8"/>
+      <circle cx="44" cy="87" r="2.8"/><circle cx="53" cy="91" r="2.8"/><circle cx="75" cy="91" r="2.8"/>
+      <circle cx="84" cy="87" r="2.8"/>
+    </g>
+  </g>
+
+  <!-- 4. Dose plan: isodose wash over the slice -->
+  <g transform="translate(480 122)">
+    <use xlink:href="#slice" href="#slice"/>
+    <ellipse cx="64" cy="63" rx="31" ry="25" fill="#3b82f6" opacity="0.35"/>
+    <ellipse cx="64" cy="63" rx="23" ry="18" fill="#22c55e" opacity="0.45"/>
+    <ellipse cx="64" cy="63" rx="15.5" ry="12.5" fill="#facc15" opacity="0.55"/>
+    <ellipse cx="64" cy="63" rx="8" ry="6.5" fill="#ef4444" opacity="0.75"/>
+    <use xlink:href="#contours" href="#contours" opacity="0.9"/>
+  </g>
+
+  <!-- arrows -->
+  <g fill="none" stroke="#7dd3fc" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M160 178 l7 8 l-7 8"/>
+    <path d="M312 178 l7 8 l-7 8"/>
+    <path d="M464 178 l7 8 l-7 8"/>
+  </g>
+
+  <g font-family="Raleway, Arial, sans-serif" font-size="15" font-weight="600" fill="#ffffff" text-anchor="middle">
+    <text x="88" y="280">CT scan</text>
+    <text x="240" y="280">Contours</text>
+    <text x="392" y="280">Applicator</text>
+    <text x="544" y="280">Dose plan</text>
+  </g>
+  <g font-family="Raleway, Arial, sans-serif" font-size="11.5" fill="#e0f2fe" opacity="0.8" text-anchor="middle">
+    <text x="88" y="298">planning image</text>
+    <text x="240" y="298">target and organs at risk</text>
+    <text x="392" y="298">segmented, then reconstructed</text>
+    <text x="544" y="298">draft for clinician review</text>
+  </g>
+
+  <text x="320" y="368" text-anchor="middle" font-family="Raleway, Arial, sans-serif" font-size="11" fill="#e0f2fe" opacity="0.55">Schematic illustration, not patient data</text>
+</svg>

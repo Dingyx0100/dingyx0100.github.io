@@ -128,6 +128,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   box-shadow: 0 10px 40px rgba(0,0,0,0.3);
 }
 .project-modal::backdrop { background: rgba(0,0,0,0.55); }
+#modalLinks .modal-link { border-radius: 999px; padding: 8px 20px; margin-right: 8px; }
 /* show the whole image (screenshots must not be cropped), letterboxed on dark */
 .project-modal img {
   width: 100%;
@@ -136,6 +137,14 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   display: block;
   background: #111;
 }
+/* projects with a demo video show it in place of the image */
+.project-modal video {
+  width: 100%;
+  max-height: 55vh;
+  display: block;
+  background: #0d1016;
+}
+.project-modal video[hidden], .project-modal img[hidden] { display: none; }
 .modal-credit {
   margin-top: 16px;
   color: #777;
@@ -143,6 +152,12 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 }
 .modal-body { padding: 20px 28px 28px; line-height: 1.6; }
 .modal-body h3 { margin-top: 0; }
+.modal-results { width: 100%; margin: 4px 0 16px; border-collapse: collapse; font-size: 14px; line-height: 1.4; }
+.modal-results caption { padding-bottom: 6px; color: var(--muted); font-size: 13px; text-align: left; }
+.modal-results th, .modal-results td { padding: 7px 10px; border-bottom: 1px solid #eee; text-align: left; }
+.modal-results th { background: var(--accent-soft); color: var(--accent-dark); font-weight: 600; }
+.modal-results th:not(:first-child), .modal-results td:not(:first-child) { text-align: right; white-space: nowrap; }
+.modal-results td:last-child { color: var(--accent-dark); font-weight: 600; }
 .modal-close {
   position: absolute;
   top: 10px;
@@ -188,7 +203,7 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 .section-title { margin: 8px 0 16px; font-weight: bold; }
 .section-hint { margin: -6px 0 14px; color: #666; font-size: 14px; }
 
-.intro-card, .tl-item, .skill-group, .skill-tools {
+.intro-card, .tl-item, .skill-group, .skill-tools, .skill-core {
   background: #fff;
   border-radius: var(--radius);
   box-shadow: var(--shadow);
@@ -332,6 +347,11 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 .chip.linked:hover { background: var(--accent-soft-hover); }
 .chip.linked.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .chip.demo { margin: 0 2px 0 0; padding: 1px 8px; cursor: default; }
+/* core stack: filled chips for the skills used most, with a context note on hover */
+.skill-core { margin-bottom: 16px; padding: 14px 20px 6px; }
+.skill-core b { margin-right: 10px; font-size: 14px; }
+.chip.core { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; font-weight: 600; cursor: default; }
+.chip.core:not(.demo):focus-visible { outline: 2px solid var(--accent-line); outline-offset: 2px; }
 /* tooltip listing the projects that use a skill */
 .chip[data-tip]:hover::after, .chip[data-tip]:focus-visible::after {
   content: attr(data-tip);
@@ -345,6 +365,27 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   color: #fff;
   font-size: 12px;
   white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+}
+/* core notes are longer: let them wrap so they fit on a phone */
+.chip.core[data-tip]:hover::after, .chip.core[data-tip]:focus::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 220px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
   pointer-events: none;
   z-index: 5;
 }
@@ -370,8 +411,83 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
   font: inherit;
 }
 .skill-banner button:hover { text-decoration: underline; }
-.project-grid.spotlight .card:not(.match) { opacity: 0.35; filter: grayscale(0.7); }
-.project-grid.spotlight .card.match { box-shadow: 0 0 0 3px var(--accent), var(--shadow-hover); }
+/* Earlier work: compact rows under the grid */
+.earlier { padding: 0 16px 24px; }
+.earlier[hidden] { display: none; }
+.earlier-head { display: flex; align-items: center; justify-content: space-between; margin: 8px 0 8px; }
+.earlier-title { margin: 0; color: var(--muted); font-size: 16px; font-weight: 600; }
+/* arrows sit on the strip's edges, faint until the strip is hovered or focused */
+.earlier-window { position: relative; }
+.earlier-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+  color: var(--accent-dark);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 0.2s, background 0.15s;
+}
+.earlier-arrow svg { display: block; }
+.earlier-arrow.prev { left: -6px; }
+.earlier-arrow.next { right: -6px; }
+.earlier-window:hover .earlier-arrow, .earlier-arrow:focus-visible { opacity: 0.55; }
+.earlier-window:hover .earlier-arrow:hover, .earlier-arrow:focus-visible { opacity: 1; background: #fff; }
+.earlier-arrow[hidden] { display: none; }
+/* touch screens have no hover: swiping is the way to scroll there */
+@media (hover: none) { .earlier-arrow { display: none; } }
+/* horizontal strip: drag with the mouse, swipe on touch, snaps to each item */
+.earlier-scroller {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;   /* no visible bar: drag, swipe, trackpad or the edge arrows */
+  cursor: grab;
+  /* room so hover shadows and lift aren't clipped */
+  margin: 0 -16px;
+  padding: 8px 16px;
+  scroll-padding: 0 16px;
+}
+.earlier-scroller::-webkit-scrollbar { display: none; }
+.earlier-scroller.dragging { cursor: grabbing; scroll-snap-type: none; scroll-behavior: auto; user-select: none; }
+.earlier-scroller.dragging .earlier-item { pointer-events: none; }
+/* fade the edge that has more items beyond it */
+.earlier-scroller.more-right { -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent); }
+.earlier-scroller.more-left { -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to left, #000 calc(100% - 48px), transparent); }
+.earlier-scroller.more-left.more-right { -webkit-mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent); mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent); }
+.earlier-list { display: flex; gap: 12px; width: max-content; }
+.earlier-item {
+  flex: 0 0 320px;
+  scroll-snap-align: start;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: #fff;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.earlier-item:hover, .earlier-item:focus-visible { box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+.earlier-item[hidden] { display: none; }
+.earlier-img { width: 96px; height: 60px; flex-shrink: 0; border-radius: 6px; object-fit: cover; }
+.earlier-body { flex: 1; min-width: 0; }
+.earlier-body .card-title { margin: 0 0 6px; font-size: 15px; -webkit-line-clamp: 2; }
+.earlier-body .card-footer { margin-top: 0; }
+#projectsArea.spotlight .project-item:not(.match) { opacity: 0.35; filter: grayscale(0.7); }
+#projectsArea.spotlight .project-item.match { box-shadow: 0 0 0 3px var(--accent), var(--shadow-hover); }
 
 /* contact */
 .contact-grid {
@@ -534,7 +650,6 @@ a.contact-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2
     <a href="https://github.com/Dingyx0100" target="_blank" rel="noopener" title="GitHub"><i class="fa fa-github"></i></a>
     <a href="https://www.linkedin.com/in/yuxin-ding-6898b425a/" target="_blank" rel="noopener" title="LinkedIn"><i class="fa fa-linkedin"></i></a>
     <a href="https://www.instagram.com/yxding_chris/" target="_blank" rel="noopener" title="Instagram"><i class="fa fa-instagram"></i></a>
-    <a href="https://www.facebook.com/profile.php?id=100085318224279&amp;sk=about_work_and_education" target="_blank" rel="noopener" title="Facebook"><i class="fa fa-facebook"></i></a>
     <a href="https://dingyx0100.github.io/DessertBlogPage/" target="_blank" rel="noopener" title="Dessert blog"><img src="./icon/croissant_9763439.png" alt="Dessert blog"></a>
   </div>
 </nav>
@@ -553,6 +668,7 @@ a.contact-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2
       <h2 class="section-title">Projects</h2>
       <div class="filter-bar" id="myBtnContainer">
         <button class="btn active" data-filter="all">All</button>
+        <button class="btn" data-filter="Work"><i class="fa fa-briefcase"></i> Work</button>
         <button class="btn" data-filter="Research"><i class="fa fa-book"></i> Research</button>
         <button class="btn" data-filter="Personal"><i class="fa fa-code"></i> Personal</button>
         <button class="btn" data-filter="Coursework"><i class="fa fa-group"></i> Coursework</button>
@@ -565,15 +681,35 @@ a.contact-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2
     <span>Projects using <b id="skillBannerName"></b></span>
     <button type="button" id="skillBannerClear"><i class="fa fa-times"></i> Show all</button>
   </div>
-  <div class="project-grid" id="projectGrid"></div>
+  <div id="projectsArea">
+    <div class="project-grid" id="projectGrid"></div>
+    <div class="earlier" id="earlierWork" hidden>
+      <div class="earlier-head">
+        <h3 class="earlier-title">Earlier work</h3>
+      </div>
+      <div class="earlier-window">
+        <div class="earlier-scroller" id="earlierScroller">
+          <div class="earlier-list" id="earlierList"></div>
+        </div>
+        <button type="button" class="earlier-arrow prev" id="earlierPrev" aria-label="Scroll earlier work left">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M10 3 L5 8 L10 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button type="button" class="earlier-arrow next" id="earlierNext" aria-label="Scroll earlier work right">
+          <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M6 3 L11 8 L6 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- Project details modal -->
   <dialog class="project-modal" id="projectModal">
     <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
     <img id="modalImg" alt="">
+    <video id="modalVideo" muted loop playsinline preload="none" hidden></video>
     <div class="modal-body">
       <h3 id="modalTitle"></h3>
       <p id="modalDesc"></p>
+      <table class="modal-results" id="modalResults" hidden></table>
       <div id="modalTags"></div>
       <div id="modalLinks"></div>
       <p class="modal-credit" id="modalCredit"></p>
@@ -679,14 +815,25 @@ a.contact-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2
   <!-- ===== Skills: chips with data-match link to project tags (see projects.js) ===== -->
   <section class="section" id="skills">
     <h2 class="section-title">Skills</h2>
-    <p class="section-hint"><span class="chip linked demo">blue</span> skills link to projects. Click one to see where I used it.</p>
+    <p class="section-hint"><span class="chip core demo">Dark</span> skills are what I use most; hover for context. <span class="chip linked demo">Light blue</span> skills link to projects: click one to see where I used it.</p>
+    <!-- Core stack: day-to-day skills, with a short note on each (shown on hover / focus) -->
+    <div class="skill-core">
+      <b>Core stack</b>
+      <span class="chip core" tabindex="0" data-tip="Daily at work; used in every project here">Python</span>
+      <span class="chip core" tabindex="0" data-tip="Training and deploying segmentation models at Carina">PyTorch</span>
+      <span class="chip core" tabindex="0" data-tip="Array and geometry processing behind most pipelines">NumPy / SciPy</span>
+      <span class="chip core" tabindex="0" data-tip="CT/MR organ and applicator segmentation at Carina">3D segmentation</span>
+      <span class="chip core" tabindex="0" data-tip="Multi-site clinical data, 400+ cases across 5-6 institutions">CT / MR &amp; DICOM</span>
+      <span class="chip core" tabindex="0" data-tip="Curating and QA-checking multi-institution training data">ML data pipelines</span>
+      <span class="chip core" tabindex="0" data-tip="Reproducible multi-site evaluation supporting FDA 510(k)">Model evaluation</span>
+    </div>
     <div class="skills-grid">
       <div class="skill-group">
         <h3><i class="fa fa-eye"></i> Machine Learning &amp; Computer Vision</h3>
         <span class="chip">PyTorch</span>
         <span class="chip">scikit-learn</span>
         <span class="chip">OpenCV</span>
-        <span class="chip">3D segmentation</span>
+        <span class="chip" data-match="3D segmentation">3D segmentation</span>
         <span class="chip" data-match="YOLOv5,StrongSORT">Object detection &amp; tracking</span>
         <span class="chip" data-match="LSTM,GRU">Sequence models</span>
         <span class="chip">Medical image analysis</span>
@@ -716,7 +863,7 @@ a.contact-card:hover { box-shadow: var(--shadow-hover); transform: translateY(-2
       <div class="skill-group">
         <h3><i class="fa fa-heartbeat"></i> Medical Imaging &amp; Radiotherapy</h3>
         <span class="chip" data-match="DICOM">DICOM</span>
-        <span class="chip">CT / MR imaging</span>
+        <span class="chip" data-match="CT">CT / MR imaging</span>
         <span class="chip">SimpleITK</span>
         <span class="chip">pydicom</span>
         <span class="chip" data-match="DICOM">RTSTRUCT / RTDOSE</span>
@@ -803,9 +950,11 @@ function linkEls(links, className) {
 
 function renderProjects() {
   var grid = document.getElementById("projectGrid");
+  var earlierList = document.getElementById("earlierList");
   PROJECTS.forEach(function (p, i) {
     if (p.hidden) return;
-    var card = el("article", "card");
+    // "earlier: true" projects go in the compact Earlier work list under the grid
+    var card = el("article", p.earlier ? "earlier-item project-item" : "card project-item");
     card.dataset.category = p.category;
     card.dataset.tags = (p.tags || []).join("|").toLowerCase();
     card.dataset.short = p.short || p.title.split(":")[0];
@@ -813,15 +962,15 @@ function renderProjects() {
     card.setAttribute("role", "button");
     card.setAttribute("aria-label", p.title + " - show details");
 
-    var img = el("img", "card-img");
+    var img = el("img", p.earlier ? "earlier-img" : "card-img");
     img.src = p.thumb || p.img;
     img.alt = p.title;
     img.loading = "lazy";
     card.appendChild(img);
 
-    var body = el("div", "card-body");
+    var body = el("div", p.earlier ? "earlier-body" : "card-body");
     body.appendChild(el("h3", "card-title clamp", p.title));
-    body.appendChild(el("p", "card-desc clamp", p.description));
+    if (!p.earlier) body.appendChild(el("p", "card-desc clamp", p.description));
     var footer = el("div", "card-footer");
     footer.appendChild(el("span", "badge", CATEGORY_LABELS[p.category] || p.category));
     linkEls(p.links, "card-link").forEach(function (a) { footer.appendChild(a); });
@@ -832,22 +981,129 @@ function renderProjects() {
     card.addEventListener("keydown", function (ev) {
       if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); openProject(i); }
     });
-    grid.appendChild(card);
+    (p.earlier ? earlierList : grid).appendChild(card);
   });
+  updateEarlierVisibility();
+}
+
+// hide the Earlier work heading when none of its items are shown
+function updateEarlierVisibility() {
+  var items = document.querySelectorAll("#earlierList .earlier-item");
+  var anyShown = Array.prototype.some.call(items, function (c) { return !c.hidden; });
+  document.getElementById("earlierWork").hidden = !anyShown;
+  if (window.updateEarlierNav) updateEarlierNav();
+}
+
+// ---------- Earlier work strip: drag / swipe / arrows ----------
+function initEarlierScroller() {
+  var sc = document.getElementById("earlierScroller");
+  var prev = document.getElementById("earlierPrev"), next = document.getElementById("earlierNext");
+
+  // arrows + edge fades reflect where the strip is
+  window.updateEarlierNav = function () {
+    var max = sc.scrollWidth - sc.clientWidth;
+    var overflow = max > 2;
+    // each arrow only appears when there is more to see on its side
+    var moreLeft = overflow && sc.scrollLeft > 2;
+    var moreRight = overflow && sc.scrollLeft < max - 2;
+    prev.hidden = !moreLeft;
+    next.hidden = !moreRight;
+    sc.classList.toggle("more-left", moreLeft);
+    sc.classList.toggle("more-right", moreRight);
+  };
+  function step(dir) {
+    var item = sc.querySelector(".earlier-item:not([hidden])");
+    var w = item ? item.getBoundingClientRect().width + 12 : 300;
+    sc.scrollBy({ left: dir * Math.max(w, Math.floor(sc.clientWidth / w) * w), behavior: "smooth" });
+  }
+  prev.addEventListener("click", function () { step(-1); });
+  next.addEventListener("click", function () { step(1); });
+  sc.addEventListener("scroll", updateEarlierNav, { passive: true });
+  window.addEventListener("resize", updateEarlierNav);
+
+  // mouse drag (touch and trackpads already scroll natively)
+  var down = false, dragged = false, startX = 0, startLeft = 0;
+  sc.addEventListener("pointerdown", function (ev) {
+    if (ev.pointerType !== "mouse" || ev.button !== 0) return;
+    down = true; dragged = false;
+    startX = ev.clientX; startLeft = sc.scrollLeft;
+  });
+  window.addEventListener("pointermove", function (ev) {
+    if (!down) return;
+    var dx = ev.clientX - startX;
+    if (!dragged && Math.abs(dx) > 5) { dragged = true; sc.classList.add("dragging"); }
+    if (dragged) { sc.scrollLeft = startLeft - dx; ev.preventDefault(); }
+  });
+  window.addEventListener("pointerup", function () {
+    if (!down) return;
+    down = false;
+    if (!dragged) return;
+    setTimeout(function () { dragged = false; }, 0);   // the click (if any) fires before this
+    // let snapping settle on the nearest item once the mouse is released
+    var left = sc.scrollLeft;
+    sc.classList.remove("dragging");
+    sc.scrollLeft = left;
+  });
+  // a drag must not count as a click on the item under the mouse
+  sc.addEventListener("click", function (ev) {
+    if (dragged) { ev.stopPropagation(); ev.preventDefault(); dragged = false; }
+  }, true);
+  sc.addEventListener("dragstart", function (ev) { ev.preventDefault(); });   // no ghost-dragging images
+
+  updateEarlierNav();
 }
 
 function openProject(i) {
   var p = PROJECTS[i];
-  document.getElementById("modalImg").src = p.img;
-  document.getElementById("modalImg").alt = p.title;
+  var img = document.getElementById("modalImg"), video = document.getElementById("modalVideo");
+  img.hidden = !!p.video;
+  video.hidden = !p.video;
+  if (p.video) {
+    img.removeAttribute("src");
+    // video can be one file or a list (e.g. [webm, mp4]); the browser plays the first one it supports
+    video.removeAttribute("src");
+    video.innerHTML = "";
+    [].concat(p.video).forEach(function (url) {
+      var s = document.createElement("source");
+      s.src = url;
+      s.type = /\.webm$/i.test(url) ? "video/webm" : "video/mp4";
+      video.appendChild(s);
+    });
+    video.load();
+    video.setAttribute("aria-label", p.title + " demo video");
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    video.controls = reduce;                         // reduced motion: no autoplay, let the visitor press play
+    if (!reduce) video.play().catch(function () { video.controls = true; });
+  } else {
+    video.pause();
+    video.innerHTML = "";
+    video.removeAttribute("src");
+    img.src = p.img;
+    img.alt = p.title;
+  }
   document.getElementById("modalTitle").textContent = p.title;
   document.getElementById("modalDesc").textContent = p.description;
+  // optional results table: { caption, columns: [...], rows: [[...], ...] }
+  var table = document.getElementById("modalResults");
+  table.innerHTML = "";
+  table.hidden = !p.results;
+  if (p.results) {
+    if (p.results.caption) table.appendChild(el("caption", "", p.results.caption));
+    var head = el("tr");
+    p.results.columns.forEach(function (c) { head.appendChild(el("th", "", c)); });
+    table.appendChild(head);
+    p.results.rows.forEach(function (r) {
+      var tr = el("tr");
+      r.forEach(function (c) { tr.appendChild(el("td", "", c)); });
+      table.appendChild(tr);
+    });
+  }
   var tags = document.getElementById("modalTags");
   tags.innerHTML = "";
   (p.tags || []).forEach(function (t) { tags.appendChild(el("span", "tag", t)); });
   var links = document.getElementById("modalLinks");
   links.innerHTML = "";
-  linkEls(p.links, "w3-button w3-dark-grey w3-margin-top").forEach(function (a) { links.appendChild(a); });
+  linkEls(p.links, "w3-button w3-dark-grey w3-margin-top modal-link").forEach(function (a) { links.appendChild(a); });
   var credit = document.getElementById("modalCredit");
   credit.textContent = p.credit || "";
   credit.hidden = !p.credit;
@@ -855,15 +1111,17 @@ function openProject(i) {
 }
 
 var modal = document.getElementById("projectModal");
+modal.addEventListener("close", function () { document.getElementById("modalVideo").pause(); });
 document.getElementById("modalClose").addEventListener("click", function () { modal.close(); });
 // click on the dark backdrop closes the modal
 modal.addEventListener("click", function (ev) { if (ev.target === modal) modal.close(); });
 
 function filterSelection(category) {
-  var cards = document.querySelectorAll("#projectGrid .card");
+  var cards = document.querySelectorAll("#projectsArea .project-item");
   cards.forEach(function (c) {
     c.hidden = !(category === "all" || c.dataset.category === category);
   });
+  updateEarlierVisibility();
 }
 
 document.querySelectorAll("#myBtnContainer .btn").forEach(function (btn) {
@@ -877,15 +1135,15 @@ document.querySelectorAll("#myBtnContainer .btn").forEach(function (btn) {
 // ---------- Skills <-> projects ----------
 function cardsForSkill(chip) {
   var wanted = chip.dataset.match.toLowerCase().split(",");
-  return Array.prototype.filter.call(document.querySelectorAll("#projectGrid .card"), function (c) {
+  return Array.prototype.filter.call(document.querySelectorAll("#projectsArea .project-item"), function (c) {
     var tags = c.dataset.tags.split("|");
     return wanted.some(function (w) { return tags.indexOf(w.trim()) > -1; });
   });
 }
 
 function clearSpotlight() {
-  document.getElementById("projectGrid").classList.remove("spotlight");
-  document.querySelectorAll("#projectGrid .card.match").forEach(function (c) { c.classList.remove("match"); });
+  document.getElementById("projectsArea").classList.remove("spotlight");
+  document.querySelectorAll("#projectsArea .project-item.match").forEach(function (c) { c.classList.remove("match"); });
   document.querySelectorAll(".chip.active").forEach(function (c) { c.classList.remove("active"); });
   document.getElementById("skillBanner").hidden = true;
 }
@@ -898,7 +1156,7 @@ function spotlightSkill(chip) {
   document.querySelector("#myBtnContainer .btn.active").classList.remove("active");
   document.querySelector('#myBtnContainer .btn[data-filter="all"]').classList.add("active");
   cardsForSkill(chip).forEach(function (c) { c.classList.add("match"); });
-  document.getElementById("projectGrid").classList.add("spotlight");
+  document.getElementById("projectsArea").classList.add("spotlight");
   chip.classList.add("active");
   document.getElementById("skillBannerName").textContent = chip.textContent;
   document.getElementById("skillBanner").hidden = false;
@@ -987,6 +1245,7 @@ function initScrollSpy() {
 }
 
 renderProjects();
+initEarlierScroller();
 initSkills();
 initCounters();
 initScrollSpy();
