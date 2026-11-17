@@ -157,7 +157,8 @@ body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", sans-serif}
 .modal-results th, .modal-results td { padding: 7px 10px; border-bottom: 1px solid #eee; text-align: left; }
 .modal-results th { background: var(--accent-soft); color: var(--accent-dark); font-weight: 600; }
 .modal-results th:not(:first-child), .modal-results td:not(:first-child) { text-align: right; white-space: nowrap; }
-.modal-results td:last-child { color: var(--accent-dark); font-weight: 600; }
+.modal-results td:not(:first-child) { color: var(--accent-dark); font-weight: 600; }
+.modal-results td.results-note { color: var(--muted); font-size: 12.5px; font-weight: 400; text-align: left; white-space: normal; border-bottom: 0; padding-top: 6px; }
 .modal-close {
   position: absolute;
   top: 10px;
@@ -1098,6 +1099,11 @@ function openProject(i) {
       r.forEach(function (c) { tr.appendChild(el("td", "", c)); });
       table.appendChild(tr);
     });
+    if (p.results.note) {                                   // optional footnote under the table
+      var td = el("td", "results-note", p.results.note);
+      td.colSpan = p.results.columns.length;
+      table.appendChild(el("tr")).appendChild(td);
+    }
   }
   var tags = document.getElementById("modalTags");
   tags.innerHTML = "";
@@ -1271,7 +1277,7 @@ function initBadge() {
     if (!stat.classList.contains("ready") && stat.dataset.verify) window.open(stat.dataset.verify, "_blank", "noopener");
   });
 
-  // transform that places the big centred badge exactly over the small one
+  // transform that places the big centered badge exactly over the small one
   function fromMini(size, left, top) {
     var r = mini.getBoundingClientRect();
     var dx = r.left + r.width / 2 - (left + size / 2), dy = r.top + r.height / 2 - (top + size / 2);
@@ -1313,7 +1319,7 @@ function initBadge() {
   function hide() {
     if (!fly || fly.dataset.closing) return;
     fly.dataset.closing = "1";
-    // fully open: spin back from the centre; still flying out: reverse from wherever it is now
+    // fully open: spin back from the center; still flying out: reverse from wherever it is now
     var d = fly.dataset, from = anim.playState === "finished" ? CENTER : getComputedStyle(fly).transform;
     anim.cancel();
     backdrop.classList.remove("show");

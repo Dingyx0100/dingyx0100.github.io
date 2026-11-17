@@ -10,7 +10,8 @@
 //   links       optional, { label: url } shown as buttons on the card and in the modal
 //   hidden      optional, true keeps the entry here but leaves it off the page
 //   credit      optional, small attribution line under the modal text (e.g. for third-party data)
-//   results     optional, table in the modal: { caption, columns: [...], rows: [[...], ...] }
+//   results     optional, table in the modal: { caption, columns: [...], rows: [[...], ...], note }
+//               (caption sits above the table, note is a small footnote below it)
 //   video       optional, muted looping video shown in the modal instead of img (img is still the card image);
 //               one path or a list like [".webm", ".mp4"]: the browser plays the first format it supports
 //   earlier     optional, true lists it under "Earlier work" as a compact row instead of a grid card
@@ -95,27 +96,25 @@ var PROJECTS = [
     video: ["./proj_img/Spine.webm", "./proj_img/Spine.mp4"],
     category: "Work",
     description:
-      "Segmenting all 24 vertebrae directly is hard: neighboring vertebrae look almost identical, so models often " +
+      "Labeling all 24 vertebrae directly is hard: neighboring vertebrae look almost identical, so models often " +
       "shift labels by one level. Splitting the spine into cervical, thoracic and lumbar regions is far more reliable. " +
       "This project starts from those region masks and separates them into individual, correctly numbered vertebrae, " +
-      "including the posterior elements (the bony arch at the back of each vertebra), which are easily handed to the " +
-      "wrong level. On a 40-scan test split from the public TotalSegmentator CT dataset, it reaches a Dice of 0.911 " +
-      "and identifies 94.7% of vertebra levels, and over 90% of thoracic and lumbar posterior bone goes to the " +
-      "right vertebra.",
+      "including the bony arch at the back of each one. It also recognizes spines with a sixth lumbar or a thirteenth " +
+      "thoracic vertebra (about a quarter of the VerSe scans), which fixed-count methods mislabel. Handling them " +
+      "raised VerSe identification from 77% to 96%. Input: CT plus cervical/thoracic/lumbar region masks. Settings " +
+      "were chosen on separate development scans; each test set is run once per version.",
     results: {
-      caption: "TotalSegmentator CT, 40-scan test split unless noted",
-      columns: ["Metric", "Result"],
+      columns: ["Held-out test scans", "VerSe (73 scans)", "TotalSegmentator (40 scans)"],
       rows: [
-        ["Dice", "0.911"],
-        ["Vertebra levels identified", "94.7%"],
-        ["Scans with every level right", "45.0%"],
-        ["Thoracic / lumbar posterior bone assigned correctly", "92.8 / 90.1%"],
-        ["Cut-off vertebrae at the scan edge identified (all 95 scans)", "69.7%"]
-      ]
+        ["Vertebrae correctly identified", "96.2%", "95.7%"],
+        ["Dice", "0.943", "0.923"],
+        ["Scans with every vertebra right", "89%", "45%*"]
+      ],
+      note: "*TotalSegmentator scans often end partway through a vertebra, and those cut-off levels count too."
     },
     tags: ["3D segmentation", "CT", "Medical imaging", "Geometry processing"],
-    credit: "Evaluation data: TotalSegmentator CT dataset (CC BY 4.0), Wasserthal et al., Radiology: Artificial " +
-      "Intelligence, 2023."
+    credit: "Data: VerSe (Sekuboyina et al., Medical Image Analysis, 2021; CC BY-SA 4.0) and TotalSegmentator CT " +
+      "(Wasserthal et al., Radiology: Artificial Intelligence, 2023; CC BY 4.0)."
   },
   {
     title: "Video based Speed Measurement",
