@@ -101,20 +101,24 @@ var PROJECTS = [
       "This project starts from those region masks and separates them into individual, correctly numbered vertebrae, " +
       "including the bony arch at the back of each one. It also recognizes spines with a sixth lumbar or a thirteenth " +
       "thoracic vertebra (about a quarter of the VerSe scans), which fixed-count methods mislabel. Handling them " +
-      "raised VerSe identification from 77% to 96%. Input: CT plus cervical/thoracic/lumbar region masks. Settings " +
-      "were chosen on separate development scans; each test set is run once per version.",
+      "raised VerSe identification from 77% to 96%. It also carries over to MRI without retuning: with settings " +
+      "unchanged from CT, it identifies 96.4% of vertebrae on lumbar spine MRI (SPIDER, 360 series), with a Dice of " +
+      "0.91 and a median Dice of 0.99 on the high-resolution 3D series. Input: the scan plus cervical/thoracic/lumbar " +
+      "region masks. Settings were chosen on separate development scans; each test set is run once per version.",
     results: {
+      caption: "CT results",
       columns: ["Held-out test scans", "VerSe (73 scans)", "TotalSegmentator (40 scans)"],
       rows: [
-        ["Vertebrae correctly identified", "96.2%", "95.7%"],
-        ["Dice", "0.943", "0.923"],
-        ["Scans with every vertebra right", "89%", "45%*"]
+        ["Vertebrae correctly identified", "97.6%", "95.7%"],
+        ["Dice", "0.956", "0.923"],
+        ["Scans with every vertebra right", "92%", "45%*"]
       ],
       note: "*TotalSegmentator scans often end partway through a vertebra, and those cut-off levels count too."
     },
-    tags: ["3D segmentation", "CT", "Medical imaging", "Geometry processing"],
-    credit: "Data: VerSe (Sekuboyina et al., Medical Image Analysis, 2021; CC BY-SA 4.0) and TotalSegmentator CT " +
-      "(Wasserthal et al., Radiology: Artificial Intelligence, 2023; CC BY 4.0)."
+    tags: ["3D segmentation", "CT", "MRI", "Medical imaging", "Geometry processing"],
+    credit: "Data: VerSe (Sekuboyina et al., Medical Image Analysis, 2021; CC BY-SA 4.0), TotalSegmentator CT " +
+      "(Wasserthal et al., Radiology: Artificial Intelligence, 2023; CC BY 4.0), and SPIDER (van der Graaf et al., " +
+      "Scientific Data, 2024; CC BY 4.0)."
   },
   {
     title: "Video based Speed Measurement",
